@@ -1,0 +1,17 @@
+[
+  {
+    "topic": "LOS Red Light",
+    "keywords": ["red light", "blinking red", "no internet", "los"],
+    "content": "A blinking Red LOS (Loss of Signal) light usually means the fiber optic cable is broken or unplugged. \n\n**Steps to Fix:**\n1. Check if the fiber patch cord (yellow cable) is plugged tightly into the modem.\n2. Inspect the cable for any bends or cuts.\n3. Restart the modem by unplugging it for 10 seconds.\n4. If the light remains red, a technician visit is required."
+  },
+  {
+    "topic": "Slow Internet Speed",
+    "keywords": ["slow", "lag", "buffering", "speed"],
+    "content": "Slow internet can be caused by network congestion or device issues.\n\n**Steps to Fix:**\n1. Perform a speed test at speedtest.net.\n2. If using Wi-Fi, move closer to the router (5GHz band is faster but has shorter range).\n3. Check if any device is downloading large files.\n4. If speed is below 30% of your plan, report to technical support."
+  },
+  {
+    "topic": "Billing Payment Channels",
+    "keywords": ["pay", "where to pay", "payment", "gcf", "maya"],
+    "content": "You can pay your PLDT bill via:\n1. **GCash/Maya**: Select 'Pay Bills' > 'Telecoms' > 'PLDT'.\n2. **Bank Apps**: BPI, BDO, Unionbank online banking.\n3. **7-Eleven**: Use the CLiQQ kiosk.\n\n*Note: Payments usually post within 2-24 hours.*"
+  }
+]

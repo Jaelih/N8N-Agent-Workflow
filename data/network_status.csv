@@ -1,0 +1,4 @@
+location_id,city,area_code,status,affected_services,estimated_resolution_time
+LOC-001,Makati,1200,Operational,None,N/A
+LOC-002,Manila,1000,Maintenance,Internet,2025-10-28 14:00:00
+LOC-003,Quezon City,1100,Outage,Internet & Landline,2025-10-28 18:00:00

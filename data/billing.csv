@@ -1,0 +1,6 @@
+bill_id,customer_id,billing_cycle,amount_due,due_date,payment_status,outstanding_balance
+INV-2024-001,1001,Oct 2025,1699.00,2025-10-15,Paid,0.00
+INV-2024-002,1002,Oct 2025,2399.00,2025-10-18,Paid,0.00
+INV-2024-003,1003,Sep 2025,1299.00,2025-09-30,Unpaid,1299.00
+INV-2024-004,1004,Oct 2025,3500.00,2025-10-20,Paid,0.00
+INV-2024-005,1005,Oct 2025,3398.00,2025-10-15,Unpaid,3398.00

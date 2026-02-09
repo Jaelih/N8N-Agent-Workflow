@@ -1,0 +1,6 @@
+customer_id,name,phone_number,email,address,city,plan_type,account_status,modem_serial
+1001,Juan Dela Cruz,09171234567,juan.dc@gmail.com,"Unit 404, Rizal Tower",Makati,Fiber Unli 1699,Active,PLDT-MOD-8892
+1002,Maria Clara,09189876543,maria.clara@yahoo.com,"123 Luna St, Intramuros",Manila,Fiber Plus 2399,Active,PLDT-MOD-7721
+1003,Jose Rizal,09998887777,pepe.rizal@gmail.com,"55 Dapitan St",Quezon City,Fiber Unli 1299,Disconnected,PLDT-MOD-3321
+1004,Andres Bonifacio,09223334444,andres.boni@outlook.com,"88 Katipunan Ave",Quezon City,Biz Fiber 3500,Active,PLDT-MOD-1102
+1005,Gabriela Silang,09155556666,gabs.silang@gmail.com,"10 Vigan St",Makati,Fiber Unli 1699,Delinquent,PLDT-MOD-9912

@@ -1,0 +1,5 @@
+ticket_id,customer_id,issue_category,status,date_opened,last_agent_note
+TKT-901,1001,Billing,Closed,2025-09-10,"Explained pro-rated charges. Customer satisfied."
+TKT-902,1003,Technical,Open,2025-10-27,"Customer reports LOS Red Light. Area outage confirmed."
+TKT-903,1005,Billing,Open,2025-10-25,"Customer promises to pay on the 30th. Extension granted."
+TKT-904,1002,Request,Pending,2025-10-26,"Request for relocation to Taguig. Awaiting documentary requirements."
