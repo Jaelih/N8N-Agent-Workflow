@@ -5,15 +5,16 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "dada61ab-b968-4f3d-84c1-d89d73a0497b",
+        "responseMode": "responseNode",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        0,
-        0
+        1920,
+        800
       ],
-      "id": "0b46be43-624d-46ac-85f0-de2872559366",
+      "id": "5a36ebfb-0a0d-49d1-8613-265a86fa3b53",
       "name": "Webhook",
       "webhookId": "dada61ab-b968-4f3d-84c1-d89d73a0497b"
     },
@@ -22,31 +23,106 @@
         "promptType": "define",
         "text": "={{ $json.body.User_Request }}",
         "options": {
-          "systemMessage": "You are a helpful assistant"
+          "systemMessage": "# Identity\n\nYou are a helpful customer support agent in a telecommunications company.\n\n# Tools\n\nyou have access to a tool that retrieves information from a vector database about billings, customer information, network status, tickets, and a general knowledge base. "
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        208,
-        0
+        2128,
+        800
       ],
-      "id": "1f5a06ef-a241-4bf4-b5d4-803648f233e9",
+      "id": "cc0a4cee-2978-447a-b757-0aa1c79db083",
       "name": "AI Agent"
     },
     {
       "parameters": {
-        "model": "brnpistone/Qwen3-4B-AgentCoder-q5-k-m:latest",
+        "sessionIdType": "customKey",
+        "sessionKey": "1",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2144,
+        1008
+      ],
+      "id": "8a441f31-1740-4069-ba4b-3a63c5582ee5",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3-coder",
         "options": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        80,
-        208
+        2016,
+        1008
       ],
-      "id": "61507ea2-3bf5-442b-884b-4010359a412e",
-      "name": "Ollama Chat Model",
+      "id": "ac4d5bdd-9832-4bc7-88d7-00a441dd737a",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "gOYdga76WmcXcdTr",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2432,
+        800
+      ],
+      "id": "eb5b7239-dc00-4ae0-bcfb-1d284b3e6c40",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "fileSelector": "=/home/node/.n8n-files/files/knowledge_base.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        1152,
+        800
+      ],
+      "id": "8ec229b2-65b3-498f-b920-6a2584027e2a",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        1520,
+        960
+      ],
+      "id": "5957e7a5-8476-4781-9448-c3c2893bb532",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "model": "qwen3-embedding:8b"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        1616,
+        1248
+      ],
+      "id": "20c511ec-17d7-4088-ac0b-0601c4086238",
+      "name": "Embeddings Ollama",
       "credentials": {
         "ollamaApi": {
           "id": "xbx1AweTWqszRK0b",
@@ -56,68 +132,201 @@
     },
     {
       "parameters": {
-        "sessionIdType": "customKey",
-        "sessionKey": "1"
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
       },
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        224,
-        208
+        1360,
+        800
       ],
-      "id": "8c412261-a916-42b1-83ba-151b8df79595",
-      "name": "Simple Memory"
+      "id": "ea3804e3-c031-4f97-baac-4059be8fa102",
+      "name": "vector store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "M2lXsn9o59zaAjKG",
+          "name": "Supabase account"
+        }
+      }
     },
     {
       "parameters": {
-        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
-        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
-        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "descriptionType": "manual",
+        "toolDescription": "get billing information in supabase using the customer's ID",
+        "operation": "get",
+        "tableId": "billing",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "customer_id",
+              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions1_Value', `The numeric ID of the customer (e.g., 1001). Do not provide strings or UUIDs.`, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        2544,
+        1008
+      ],
+      "id": "c7e57c72-7e4b-4221-9bd8-5e6d956cd637",
+      "name": "billings",
+      "credentials": {
+        "supabaseApi": {
+          "id": "M2lXsn9o59zaAjKG",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "get customer account information using the customer's ID",
+        "operation": "get",
+        "tableId": "customers",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "customer_id",
+              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions0_Value', `The numeric ID of the customer (e.g., 1001). Do not provide strings or UUIDs.`, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        2640,
+        1008
+      ],
+      "id": "58661a17-ab20-4d55-9fa1-c85289cd66f3",
+      "name": "customers",
+      "credentials": {
+        "supabaseApi": {
+          "id": "M2lXsn9o59zaAjKG",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "get information about a ticket using the ticket ID or customer ID",
+        "operation": "getAll",
+        "tableId": "tickets",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "ticket_id"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        2736,
+        1008
+      ],
+      "id": "e27e4cc5-4e22-474a-b7d5-da4c1d384801",
+      "name": "tickets",
+      "credentials": {
+        "supabaseApi": {
+          "id": "M2lXsn9o59zaAjKG",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "get network status from a location using information provided by the user",
+        "operation": "get",
+        "tableId": "network_status",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "location_id",
+              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions0_Value', ``, 'string') }}"
+            },
+            {
+              "keyName": "city",
+              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions1_Value', ``, 'string') }}"
+            },
+            {
+              "keyName": "area_code",
+              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions2_Value', ``, 'string') }}"
+            },
+            {
+              "keyName": "status",
+              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions3_Value', ``, 'string') }}"
+            },
+            {
+              "keyName": "affected_services",
+              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions4_Value', ``, 'string') }}"
+            },
+            {
+              "keyName": "estimated_resolution_time",
+              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions5_Value', ``, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        2832,
+        1008
+      ],
+      "id": "d8e101f3-ba9b-4517-93bb-f9dbe116f7dc",
+      "name": "network status",
+      "credentials": {
+        "supabaseApi": {
+          "id": "M2lXsn9o59zaAjKG",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "contains about frequently asked questions by customers",
+        "tableName": {
+          "__rl": true,
+          "value": "general knowledge",
+          "mode": "list",
+          "cachedResultName": "general knowledge"
+        },
+        "topK": 0,
         "options": {}
       },
-      "type": "n8n-nodes-base.gmailTool",
-      "typeVersion": 2.2,
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
       "position": [
-        480,
-        208
+        2288,
+        1008
       ],
-      "id": "fb942cc8-4c4f-4348-a4c3-2295fdd53db0",
-      "name": "Send a message in Gmail",
-      "webhookId": "6a106f3b-c06a-4d96-b00b-b05a1ae17cbb",
+      "id": "4b7cc66b-75a9-473e-a90f-fca4c084c43f",
+      "name": "knowledge base",
       "credentials": {
-        "gmailOAuth2": {
-          "id": "JvRydwfe97DpIbmC",
-          "name": "Gmail account"
+        "supabaseApi": {
+          "id": "M2lXsn9o59zaAjKG",
+          "name": "Supabase account"
         }
       }
     }
   ],
-  "pinData": {
-    "Webhook": [
-      {
-        "json": {
-          "headers": {
-            "host": "lissa-mousiest-tingly.ngrok-free.dev",
-            "user-agent": "ElevenLabs/1.0",
-            "content-length": "68",
-            "accept": "*/*",
-            "accept-encoding": "gzip, deflate, br",
-            "content-type": "application/json",
-            "x-forwarded-for": "34.59.11.47",
-            "x-forwarded-host": "lissa-mousiest-tingly.ngrok-free.dev",
-            "x-forwarded-proto": "https"
-          },
-          "params": {},
-          "query": {},
-          "body": {
-            "User_Request": "Retrieve customer records for account number 123"
-          },
-          "webhookUrl": "https://lissa-mousiest-tingly.ngrok-free.dev/webhook-test/dada61ab-b968-4f3d-84c1-d89d73a0497b",
-          "executionMode": "test"
-        }
-      }
-    ]
-  },
+  "pinData": {},
   "connections": {
     "Webhook": {
       "main": [
@@ -125,17 +334,6 @@
           {
             "node": "AI Agent",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Ollama Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -152,7 +350,111 @@
         ]
       ]
     },
-    "Send a message in Gmail": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "vector store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "vector store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama": {
+      "ai_embedding": [
+        [
+          {
+            "node": "vector store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "knowledge base",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "billings": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "customers": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tickets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "network status": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "knowledge base": {
       "ai_tool": [
         [
           {
@@ -170,7 +472,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "99eaac6d-6376-483a-8eef-a0e6cace04b2",
+  "versionId": "ce7a544f-5534-47c2-a709-6deec5e3480b",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "fffc564f6bccd79b734384266e3dcf2518990ade13dc1c367fd5a590d5930fc0"
