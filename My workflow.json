@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        768,
-        0
+        -1360,
+        144
       ],
-      "id": "845eb71f-14bb-402a-b779-87b2d47bcd86",
+      "id": "33cb4de7-990f-4661-b896-a427c7202e93",
       "name": "Webhook",
       "webhookId": "dada61ab-b968-4f3d-84c1-d89d73a0497b"
     },
@@ -23,16 +23,16 @@
         "promptType": "define",
         "text": "={{ $json.body.User_Request }}",
         "options": {
-          "systemMessage": "# Identity\nYou are a helpful customer support agent in a telecommunications company.\n\n# Tools\nYou have access to a tool that retrieves information from a vector database about billings, customer information, network status, tickets, and a general knowledge base.\n\n# Guidelines\n- Always query the appropriate table in the vector database before answering.\n- For network issues, first use the \"network_status\" table to find data about the customer’s location.\n- Only if no data is returned from the database should you ask for clarification.\n"
+          "systemMessage": "# ROLE: Telco Security Firewall\nYou are a strict verification system. Your #1 rule is DATA PRIVACY. \nYou have access to \"customers\" and \"billings\" databases.\n\n# THE \"SILENT READ\" RULE (CRITICAL)\nWhen you use a tool to fetch customer data, you will see their Name, Email, and Phone.\n**YOU ARE FORBIDDEN FROM SPEAKING THESE VALUES.**\nYou may only output a database value IF AND ONLY IF the user has already typed that exact value in the chat.\n\n# VERIFICATION ALGORITHM (Execute Step-by-Step)\n\nSTEP 1: INITIAL INPUT\n- Ask for Name and Customer ID.\n- User says: \"I am [User_Input_Name], ID [User_Input_ID]\".\n\nSTEP 2: INTERNAL CHECK (Do This Silently)\n- Query the \"customers\" tool using [User_Input_ID].\n- Look at the \"name\" field in the result. Let's call this [DB_Real_Name].\n- COMPARE: Does [User_Input_Name] match [DB_Real_Name]?\n\nSTEP 3: THE DECISION POINT (Strict Branching)\n\n🔴 IF NAMES DO NOT MATCH:\n   - **STOP IMMEDIATELY.**\n   - OUTPUT THIS EXACT PHRASE: \"Identity verification failed. The name provided does not match the Customer ID in our records.\"\n   - **SECURITY BAN:** Do NOT say \"The ID belongs to Maria.\" Do NOT mention the real name. Do NOT ask for the email.\n\n🟢 IF NAMES MATCH:\n   - Say: \"Name confirmed. Please enter your registered email address to view billing details.\"\n   - Wait for [User_Input_Email].\n   - COMPARE [User_Input_Email] vs [DB_Real_Email].\n   - IF MISMATCH -> Say: \"Identity verification failed. Email does not match.\" (Do NOT reveal the real email).\n   - IF MATCH -> You may now fetch and show the billing info.\n\n# TECHNICAL SYNTAX\n- \"customer_id\" is a Number (e.g., 1002).\n- Do NOT use \"eq.\", quotes, or parentheses in the tool inputs.\n\n# FORMATTING RULES\n- Provide the response as a single, continuous line of text.\n- Do NOT use newlines (\\n), bullet points, or line breaks.\n- Use commas or semicolons to separate details instead."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        992,
-        0
+        -1136,
+        144
       ],
-      "id": "ab349ff8-3409-4e38-955f-577e7ef8b452",
+      "id": "31da3993-60a0-4817-b673-6a48f86aeb1e",
       "name": "AI Agent"
     },
     {
@@ -44,10 +44,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        992,
-        208
+        -1136,
+        352
       ],
-      "id": "bb38a105-8c15-4e1c-8eff-2a0db70ff0ae",
+      "id": "408af925-ef7c-458b-9459-b325cc68a8d9",
       "name": "Simple Memory"
     },
     {
@@ -58,14 +58,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        864,
-        208
+        -1264,
+        352
       ],
-      "id": "a45b979e-6b78-448d-9b96-755e48a71b64",
+      "id": "d97c25ff-4af1-4dc8-8a37-55095b76ec8b",
       "name": "OpenRouter Chat Model",
       "credentials": {
         "openRouterApi": {
-          "id": "Od2uyUY6uBLTrS0v",
+          "id": "XeigWbZ4pLAmhe7P",
           "name": "OpenRouter account"
         }
       }
@@ -77,10 +77,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        1296,
-        -16
+        -832,
+        128
       ],
-      "id": "c4a28e0e-20ac-41eb-a065-7d350082da95",
+      "id": "f8a2afd3-40d6-4d0c-8c9a-3efa6971c92f",
       "name": "Respond to Webhook"
     },
     {
@@ -91,10 +91,10 @@
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1.1,
       "position": [
-        0,
-        0
+        -2128,
+        144
       ],
-      "id": "04e72b6f-5356-4ff6-bca4-3015162837be",
+      "id": "4e019183-cf78-4d99-a75d-8df68bf4a523",
       "name": "Read/Write Files from Disk"
     },
     {
@@ -105,10 +105,10 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1.1,
       "position": [
-        2128,
-        -144
+        0,
+        0
       ],
-      "id": "ce1f0640-f92d-42f1-ac68-fcc7c20ba3fc",
+      "id": "04ed8c0a-3570-4377-ae7c-7925a2d3a005",
       "name": "Default Data Loader"
     },
     {
@@ -118,17 +118,11 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
       "typeVersion": 1,
       "position": [
-        464,
-        448
+        -1664,
+        592
       ],
-      "id": "41e5127e-0a4c-4368-a11c-d3142f5cc9a0",
-      "name": "Embeddings Ollama",
-      "credentials": {
-        "ollamaApi": {
-          "id": "N2qFk7YnyMoyaZD4",
-          "name": "Ollama account"
-        }
-      }
+      "id": "232c5824-6e0a-4af5-98ea-56cf1ca71dfa",
+      "name": "Embeddings Ollama"
     },
     {
       "parameters": {
@@ -145,14 +139,14 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        208,
-        0
+        -1920,
+        144
       ],
-      "id": "f3128a99-4da6-485f-a32a-8b09c3665bf2",
+      "id": "6e332cfb-1cb7-4aa8-9d7d-a37509ff401e",
       "name": "vector store",
       "credentials": {
         "supabaseApi": {
-          "id": "vymOy6EUH45nZ0Ug",
+          "id": "CyWSOo0TzJYQasFk",
           "name": "Supabase account"
         }
       }
@@ -175,14 +169,14 @@
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
       "position": [
-        1440,
-        208
+        -688,
+        352
       ],
-      "id": "d54e1ab6-e513-4f27-ae8c-9512a9290021",
+      "id": "9dcd75b0-58f4-4a0b-89b0-ade575845beb",
       "name": "billings",
       "credentials": {
         "supabaseApi": {
-          "id": "vymOy6EUH45nZ0Ug",
+          "id": "CyWSOo0TzJYQasFk",
           "name": "Supabase account"
         }
       }
@@ -205,14 +199,14 @@
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
       "position": [
-        1536,
-        208
+        -592,
+        352
       ],
-      "id": "c0c79df1-eb7b-48b9-a312-0dc84efea5ee",
+      "id": "fc231c14-da02-48bf-9e77-841fa5377788",
       "name": "customers",
       "credentials": {
         "supabaseApi": {
-          "id": "vymOy6EUH45nZ0Ug",
+          "id": "CyWSOo0TzJYQasFk",
           "name": "Supabase account"
         }
       }
@@ -235,14 +229,14 @@
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
       "position": [
-        1632,
-        208
+        -496,
+        352
       ],
-      "id": "c4174055-8efe-4c94-bf93-ea10f5041bf2",
+      "id": "62a556a9-03c3-4ecf-af3b-8057e52a405c",
       "name": "tickets",
       "credentials": {
         "supabaseApi": {
-          "id": "vymOy6EUH45nZ0Ug",
+          "id": "CyWSOo0TzJYQasFk",
           "name": "Supabase account"
         }
       }
@@ -257,14 +251,14 @@
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
       "position": [
-        1728,
-        208
+        -400,
+        352
       ],
-      "id": "0d62ae78-ba3c-4c51-8bab-547d1bb29f69",
+      "id": "701f641f-9fa9-43c4-8e3e-7a0eba54bf0c",
       "name": "network status",
       "credentials": {
         "supabaseApi": {
-          "id": "vymOy6EUH45nZ0Ug",
+          "id": "CyWSOo0TzJYQasFk",
           "name": "Supabase account"
         }
       }
@@ -285,14 +279,14 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        1136,
-        224
+        -992,
+        368
       ],
-      "id": "89b248c8-b635-42f2-b9e7-41b1e56f9c2b",
+      "id": "5d0e097d-58a0-4c87-85fa-cb6a52e58fe9",
       "name": "knowledge base",
       "credentials": {
         "supabaseApi": {
-          "id": "vymOy6EUH45nZ0Ug",
+          "id": "CyWSOo0TzJYQasFk",
           "name": "Supabase account"
         }
       }
@@ -331,16 +325,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "Read/Write Files from Disk": {
-      "main": [
-        []
-      ]
-    },
-    "Default Data Loader": {
-      "ai_document": [
-        []
       ]
     },
     "Embeddings Ollama": {
@@ -432,11 +416,10 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "96ae23dd-cf17-409b-8067-5aa9bf2aee02",
+  "versionId": "e9a7df06-49c2-4292-92d5-30b2b20e32fb",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "00e5ff37b51a60791146217869936d1273dbfd4aee48938d13aa7629f378217a"
+    "instanceId": "fcfe4524afe8a6b4d6cd712b849daa018736ed41dfc1cd22259344ff8d61665d"
   },
-  "id": "fCnPBx30ZNMlr3F2T9lKm",
+  "id": "E4pkQapg2WkblObY-voiv",
   "tags": []
 }
