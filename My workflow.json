@@ -12,10 +12,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        3456,
-        2048
+        -592,
+        80
       ],
-      "id": "3d6abc2b-e532-444a-a3da-4a1ff907bfff",
+      "id": "b592aa67-14cb-46fe-ba9b-e490fec5ee94",
       "name": "AI Agent"
     },
     {
@@ -27,10 +27,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        3456,
-        2256
+        -592,
+        288
       ],
-      "id": "0d86f478-591d-4e0f-a1f7-aec1d10e2609",
+      "id": "720c0941-d1a3-4ffc-ad7d-5e2d03890b19",
       "name": "Simple Memory"
     },
     {
@@ -41,14 +41,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        3328,
-        2256
+        -720,
+        288
       ],
-      "id": "dc8cd120-359d-48ac-9b9a-c665e94bd165",
+      "id": "3107af29-dd8a-49d5-9983-84a8d7bc1a64",
       "name": "OpenRouter Chat Model",
       "credentials": {
         "openRouterApi": {
-          "id": "TBhVPmR7gGBVePdU",
+          "id": "Od2uyUY6uBLTrS0v",
           "name": "OpenRouter account"
         }
       }
@@ -60,10 +60,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        3744,
-        2048
+        -304,
+        80
       ],
-      "id": "73a9fd3e-8edd-4805-b053-48098b90a9dc",
+      "id": "5e4dacca-e80b-49f3-ab7d-d9bd51b5d8f2",
       "name": "Respond to Webhook"
     },
     {
@@ -73,14 +73,14 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
       "typeVersion": 1,
       "position": [
-        3600,
-        2416
+        -448,
+        448
       ],
-      "id": "9ffa77f1-4309-43b0-946f-3aede31f1cd9",
+      "id": "5d207a38-1004-48de-9fa9-b339c72a8f43",
       "name": "Embeddings Ollama",
       "credentials": {
         "ollamaApi": {
-          "id": "tIANWcgUxeV2ZDNU",
+          "id": "N2qFk7YnyMoyaZD4",
           "name": "Ollama account"
         }
       }
@@ -90,7 +90,7 @@
         "descriptionType": "manual",
         "toolDescription": "get billing information in supabase using the customer's 'customer_id'",
         "operation": "get",
-        "tableId": "billing",
+        "tableId": "billings",
         "filters": {
           "conditions": [
             {
@@ -103,14 +103,14 @@
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
       "position": [
-        3904,
-        2256
+        -144,
+        288
       ],
-      "id": "704c683d-5194-4b82-bf30-94f8370692d5",
+      "id": "80481f1e-a13e-48c9-8842-dc6d39c3abcc",
       "name": "billings",
       "credentials": {
         "supabaseApi": {
-          "id": "YknCFx3chWNwiQ3P",
+          "id": "vymOy6EUH45nZ0Ug",
           "name": "Supabase account"
         }
       }
@@ -133,14 +133,14 @@
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
       "position": [
-        4000,
-        2256
+        -48,
+        288
       ],
-      "id": "8e4aff47-698e-4adc-81a1-1fb86b05cabd",
+      "id": "7cf7450f-e822-4aa1-a96d-798fc836b89a",
       "name": "customers",
       "credentials": {
         "supabaseApi": {
-          "id": "YknCFx3chWNwiQ3P",
+          "id": "vymOy6EUH45nZ0Ug",
           "name": "Supabase account"
         }
       }
@@ -163,14 +163,14 @@
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
       "position": [
-        4096,
-        2256
+        48,
+        288
       ],
-      "id": "96da3914-9417-4934-8b94-f09a62cc1b85",
+      "id": "99762741-1c37-4499-abad-71463db55924",
       "name": "tickets",
       "credentials": {
         "supabaseApi": {
-          "id": "YknCFx3chWNwiQ3P",
+          "id": "vymOy6EUH45nZ0Ug",
           "name": "Supabase account"
         }
       }
@@ -185,14 +185,14 @@
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
       "position": [
-        4192,
-        2256
+        144,
+        288
       ],
-      "id": "9255aa87-5d12-46d6-809e-5ed6eb25256a",
+      "id": "cf251258-76c8-4767-a39e-9c6e54126c0d",
       "name": "network status",
       "credentials": {
         "supabaseApi": {
-          "id": "YknCFx3chWNwiQ3P",
+          "id": "vymOy6EUH45nZ0Ug",
           "name": "Supabase account"
         }
       }
@@ -213,30 +213,32 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        3600,
-        2272
+        -448,
+        304
       ],
-      "id": "769bc16e-c15f-4f87-af96-095587f32017",
+      "id": "987f22b0-de6f-4361-90d1-b12a52cf5cae",
       "name": "knowledge base",
       "credentials": {
         "supabaseApi": {
-          "id": "YknCFx3chWNwiQ3P",
+          "id": "vymOy6EUH45nZ0Ug",
           "name": "Supabase account"
         }
       }
     },
     {
       "parameters": {
-        "path": "3202ed58-9850-4cd8-b4e0-fe0c57066032",
+        "httpMethod": "POST",
+        "path": "testing",
+        "responseMode": "responseNode",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        3280,
-        2048
+        -768,
+        80
       ],
-      "id": "c7a2a686-9252-406b-89d8-9d37ad559121",
+      "id": "c89b2d27-ba81-4ad2-80a2-1b57c49be247",
       "name": "Webhook",
       "webhookId": "3202ed58-9850-4cd8-b4e0-fe0c57066032"
     },
@@ -249,10 +251,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        4048,
-        1968
+        0,
+        0
       ],
-      "id": "37f6156e-1505-4c87-85f9-79babc0f6007",
+      "id": "1b3c5ad8-9a38-40f1-8058-8e586423a03a",
       "name": "Sticky Note"
     }
   ],
@@ -369,17 +371,17 @@
       ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "3768d9a1-219a-4d71-9782-d4335070ece4",
+  "versionId": "192170d1-1a16-4a2d-9c7a-62a256638873",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "6706564d2fe2eb9a69ad5152cc9c7ff9ced876386855f98d0502def674fe6a0d"
+    "instanceId": "00e5ff37b51a60791146217869936d1273dbfd4aee48938d13aa7629f378217a"
   },
-  "id": "7R6pTfJ3QU8ipdxs",
+  "id": "PlL1S4pnnNabrpBr5VkN5",
   "tags": []
 }
