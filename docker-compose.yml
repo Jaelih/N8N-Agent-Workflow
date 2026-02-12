@@ -3,18 +3,16 @@ services:
     image: docker.n8n.io/n8nio/n8n:latest
     container_name: n8n
     ports:
-      - 6789:5678 # replace soon with ngrok port (on the left)
+      - ${NGROK_PORT}:5678
     environment:
       TZ: "Asia/Manila"
       GENERIC_TIMEZONE: "Asia/Manila"
       N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
       N8N_RUNNERS_ENABLED: "true"
-      N8N_PROXY_HOPS: "1"
-      N8N_TRUST_PROXY: "true"
-      # Uncomment after setting up ngrok
-      # links are for making the webhooks HTTPS (instead of HTTP, becuase elevenlabs require HTTPS)
-      EDITOR_BASE_URL: " https://lozenged-differently-kelsie.ngrok-free.dev"
-      WEBHOOK_URL: " https://lozenged-differently-kelsie.ngrok-free.dev"
+      # Uncomment after setting up ngrok with:
+      # ngrok http 6789
+      EDITOR_BASE_URL: ${NGROK_URL}
+      WEBHOOK_URL: ${NGROK_URL}
     volumes:
       - n8n_data:/home/node/.n8n
       - ./data:/files:ro
