@@ -3,23 +3,6 @@
   "nodes": [
     {
       "parameters": {
-        "httpMethod": "POST",
-        "path": "dada61ab-b968-4f3d-84c1-d89d73a0497b",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -1360,
-        144
-      ],
-      "id": "33cb4de7-990f-4661-b896-a427c7202e93",
-      "name": "Webhook",
-      "webhookId": "dada61ab-b968-4f3d-84c1-d89d73a0497b"
-    },
-    {
-      "parameters": {
         "promptType": "define",
         "text": "={{ $json.body.User_Request }}",
         "options": {
@@ -29,10 +12,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        -1136,
-        144
+        -592,
+        80
       ],
-      "id": "31da3993-60a0-4817-b673-6a48f86aeb1e",
+      "id": "b592aa67-14cb-46fe-ba9b-e490fec5ee94",
       "name": "AI Agent"
     },
     {
@@ -44,10 +27,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -1136,
-        352
+        -592,
+        288
       ],
-      "id": "408af925-ef7c-458b-9459-b325cc68a8d9",
+      "id": "720c0941-d1a3-4ffc-ad7d-5e2d03890b19",
       "name": "Simple Memory"
     },
     {
@@ -58,14 +41,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        -1264,
-        352
+        -720,
+        288
       ],
-      "id": "d97c25ff-4af1-4dc8-8a37-55095b76ec8b",
+      "id": "3107af29-dd8a-49d5-9983-84a8d7bc1a64",
       "name": "OpenRouter Chat Model",
       "credentials": {
         "openRouterApi": {
-          "id": "XeigWbZ4pLAmhe7P",
+          "id": "Od2uyUY6uBLTrS0v",
           "name": "OpenRouter account"
         }
       }
@@ -77,39 +60,11 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        -832,
-        128
+        -304,
+        80
       ],
-      "id": "f8a2afd3-40d6-4d0c-8c9a-3efa6971c92f",
+      "id": "5e4dacca-e80b-49f3-ab7d-d9bd51b5d8f2",
       "name": "Respond to Webhook"
-    },
-    {
-      "parameters": {
-        "fileSelector": "=/home/node/.n8n-files/files/*",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.readWriteFile",
-      "typeVersion": 1.1,
-      "position": [
-        -2128,
-        144
-      ],
-      "id": "4e019183-cf78-4d99-a75d-8df68bf4a523",
-      "name": "Read/Write Files from Disk"
-    },
-    {
-      "parameters": {
-        "dataType": "binary",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
-      "typeVersion": 1.1,
-      "position": [
-        0,
-        0
-      ],
-      "id": "04ed8c0a-3570-4377-ae7c-7925a2d3a005",
-      "name": "Default Data Loader"
     },
     {
       "parameters": {
@@ -118,36 +73,15 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
       "typeVersion": 1,
       "position": [
-        -1664,
-        592
+        -448,
+        448
       ],
-      "id": "232c5824-6e0a-4af5-98ea-56cf1ca71dfa",
-      "name": "Embeddings Ollama"
-    },
-    {
-      "parameters": {
-        "mode": "retrieve-as-tool",
-        "toolDescription": "Use this tool to search the company knowledge base for FAQs, policies, troubleshooting guides, and general support information. Use it when the user asks about company services, procedures, billing explanations, technical issues, or general inquiries that require documented information.\n",
-        "tableName": {
-          "__rl": true,
-          "value": "documents",
-          "mode": "list",
-          "cachedResultName": "documents"
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
-      "typeVersion": 1.3,
-      "position": [
-        -1920,
-        144
-      ],
-      "id": "6e332cfb-1cb7-4aa8-9d7d-a37509ff401e",
-      "name": "vector store",
+      "id": "5d207a38-1004-48de-9fa9-b339c72a8f43",
+      "name": "Embeddings Ollama",
       "credentials": {
-        "supabaseApi": {
-          "id": "CyWSOo0TzJYQasFk",
-          "name": "Supabase account"
+        "ollamaApi": {
+          "id": "N2qFk7YnyMoyaZD4",
+          "name": "Ollama account"
         }
       }
     },
@@ -156,7 +90,7 @@
         "descriptionType": "manual",
         "toolDescription": "get billing information in supabase using the customer's 'customer_id'",
         "operation": "get",
-        "tableId": "billing",
+        "tableId": "billings",
         "filters": {
           "conditions": [
             {
@@ -169,14 +103,14 @@
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
       "position": [
-        -688,
-        352
+        -144,
+        288
       ],
-      "id": "9dcd75b0-58f4-4a0b-89b0-ade575845beb",
+      "id": "80481f1e-a13e-48c9-8842-dc6d39c3abcc",
       "name": "billings",
       "credentials": {
         "supabaseApi": {
-          "id": "CyWSOo0TzJYQasFk",
+          "id": "vymOy6EUH45nZ0Ug",
           "name": "Supabase account"
         }
       }
@@ -199,14 +133,14 @@
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
       "position": [
-        -592,
-        352
+        -48,
+        288
       ],
-      "id": "fc231c14-da02-48bf-9e77-841fa5377788",
+      "id": "7cf7450f-e822-4aa1-a96d-798fc836b89a",
       "name": "customers",
       "credentials": {
         "supabaseApi": {
-          "id": "CyWSOo0TzJYQasFk",
+          "id": "vymOy6EUH45nZ0Ug",
           "name": "Supabase account"
         }
       }
@@ -229,14 +163,14 @@
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
       "position": [
-        -496,
-        352
+        48,
+        288
       ],
-      "id": "62a556a9-03c3-4ecf-af3b-8057e52a405c",
+      "id": "99762741-1c37-4499-abad-71463db55924",
       "name": "tickets",
       "credentials": {
         "supabaseApi": {
-          "id": "CyWSOo0TzJYQasFk",
+          "id": "vymOy6EUH45nZ0Ug",
           "name": "Supabase account"
         }
       }
@@ -251,14 +185,14 @@
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
       "position": [
-        -400,
-        352
+        144,
+        288
       ],
-      "id": "701f641f-9fa9-43c4-8e3e-7a0eba54bf0c",
+      "id": "cf251258-76c8-4767-a39e-9c6e54126c0d",
       "name": "network status",
       "credentials": {
         "supabaseApi": {
-          "id": "CyWSOo0TzJYQasFk",
+          "id": "vymOy6EUH45nZ0Ug",
           "name": "Supabase account"
         }
       }
@@ -279,32 +213,53 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        -992,
-        368
+        -448,
+        304
       ],
-      "id": "5d0e097d-58a0-4c87-85fa-cb6a52e58fe9",
+      "id": "987f22b0-de6f-4361-90d1-b12a52cf5cae",
       "name": "knowledge base",
       "credentials": {
         "supabaseApi": {
-          "id": "CyWSOo0TzJYQasFk",
+          "id": "vymOy6EUH45nZ0Ug",
           "name": "Supabase account"
         }
       }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "testing",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -768,
+        80
+      ],
+      "id": "c89b2d27-ba81-4ad2-80a2-1b57c49be247",
+      "name": "Webhook",
+      "webhookId": "3202ed58-9850-4cd8-b4e0-fe0c57066032"
+    },
+    {
+      "parameters": {
+        "content": "## run before doing anything else\n- delete all nodes\n- import 'My workflow.json'\n\nin terminal:\n- docker compose down\n- docker compose up\n",
+        "height": 224,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1b3c5ad8-9a38-40f1-8058-8e586423a03a",
+      "name": "Sticky Note"
     }
   ],
   "pinData": {},
   "connections": {
-    "Webhook": {
-      "main": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Simple Memory": {
       "ai_memory": [
         [
@@ -330,11 +285,6 @@
     "Embeddings Ollama": {
       "ai_embedding": [
         [
-          {
-            "node": "vector store",
-            "type": "ai_embedding",
-            "index": 0
-          },
           {
             "node": "knowledge base",
             "type": "ai_embedding",
@@ -408,6 +358,17 @@
           }
         ]
       ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -416,10 +377,11 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "e9a7df06-49c2-4292-92d5-30b2b20e32fb",
+  "versionId": "192170d1-1a16-4a2d-9c7a-62a256638873",
   "meta": {
-    "instanceId": "fcfe4524afe8a6b4d6cd712b849daa018736ed41dfc1cd22259344ff8d61665d"
+    "templateCredsSetupCompleted": true,
+    "instanceId": "00e5ff37b51a60791146217869936d1273dbfd4aee48938d13aa7629f378217a"
   },
-  "id": "E4pkQapg2WkblObY-voiv",
+  "id": "PlL1S4pnnNabrpBr5VkN5",
   "tags": []
 }
