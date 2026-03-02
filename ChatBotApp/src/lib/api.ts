@@ -1,7 +1,7 @@
 import type { VoiceResponse} from "@/types";
 
-// Keep your current ngrok URL
-const BASE_URL = "http://127.0.0.1:6789"; 
+// FastAPI Backend URL (Python-PLDT)
+const BASE_URL = "http://127.0.0.1:8000"; 
 
 export const api = {
   // text chat

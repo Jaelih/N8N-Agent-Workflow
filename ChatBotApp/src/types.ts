@@ -3,6 +3,7 @@ export interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  audioUrl?: string; // Optional audio URL for voice responses
 }
 
 export interface VoiceResponse {

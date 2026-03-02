@@ -18,6 +18,31 @@ services:
       - n8n_data:/home/node/.n8n
       - ./data:/home/node/.n8n-files/files/:ro
 
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pldt_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_API_BASE=${OPENAI_API_BASE}
+      - OPENAI_MODEL=${OPENAI_MODEL}
+      - GOOGLE_TTS_API_KEY=${GOOGLE_TTS_API_KEY}
+      - N8N_BILLING_WEBHOOK=${N8N_BILLING_WEBHOOK}
+      - N8N_CUSTOMER_WEBHOOK=${N8N_CUSTOMER_WEBHOOK}
+      - N8N_TICKET_WEBHOOK=${N8N_TICKET_WEBHOOK}
+      - N8N_NETWORK_WEBHOOK=${N8N_NETWORK_WEBHOOK}
+      - N8N_KNOWLEDGE_WEBHOOK=${N8N_KNOWLEDGE_WEBHOOK}
+      - N8N_API_KEY=${N8N_API_KEY}
+    volumes:
+      - ./backend:/app
+      - backend_db:/app/db
+    restart: unless-stopped
+    depends_on:
+      - n8n
+
   chatbot:
     build:
       context: ./ChatBotApp
@@ -26,6 +51,9 @@ services:
     ports:
       - "3000:80"
     restart: unless-stopped
+    depends_on:
+      - backend
 
 volumes:
   n8n_data:
+  backend_db:

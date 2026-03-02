@@ -1,4 +1,5 @@
 import type { Message } from './types'
+import AudioPlayer from './AudioPlayer'
 
 interface MessageBubbleProps {
   message: Message
@@ -36,6 +37,11 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
           <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words">
             {message.content}
           </p>
+          {message.audioUrl && !isUser && (
+            <div className="mt-2">
+              <AudioPlayer audioUrl={message.audioUrl} autoPlay />
+            </div>
+          )}
         </div>
         <span className={`text-xs mt-1.5 px-1 ${
           isUser ? 'text-gray-400' : 'text-gray-400'

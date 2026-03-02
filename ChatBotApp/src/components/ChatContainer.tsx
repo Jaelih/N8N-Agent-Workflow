@@ -70,6 +70,47 @@ export default function ChatContainer() {
     }
   }
 
+  const handleVoiceMessage = async (audioBlob: Blob) => {
+    setIsTyping(true)
+
+    try {
+      // Send voice to backend
+      const data = await api.sendAudio(audioBlob, sessionId)
+
+      // Add user's transcribed message
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        role: 'user',
+        content: data.transcript,
+        timestamp: new Date(),
+      }
+      setMessages((prev) => [...prev, userMessage])
+
+      // Add assistant's response with audio
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: data.response_text,
+        timestamp: new Date(),
+        audioUrl: api.getAudioUrl(data.audio_file),
+      }
+      setMessages((prev) => [...prev, assistantMessage])
+
+    } catch (error) {
+      console.error("Voice API Error:", error)
+      
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: "I'm sorry, I couldn't process your voice message. Please try again or type your message.",
+        timestamp: new Date(),
+      }
+      setMessages((prev) => [...prev, errorMessage])
+    } finally {
+      setIsTyping(false)
+    }
+  }
+
   return (
     <div className="flex flex-col h-screen bg-white">
       {/* PLDT Support Header */}
@@ -122,7 +163,12 @@ export default function ChatContainer() {
       </div>
 
       {/* Input Area */}
-      <ChatInput onSendMessage={handleSendMessage} disabled={isTyping} />
+      <ChatInput 
+        onSendMessage={handleSendMessage} 
+        onVoiceMessage={handleVoiceMessage}
+        disabled={isTyping}
+        voiceEnabled={true}
+      />
     </div>
   )
 }
@@ -135,10 +181,10 @@ interface EmptyStateProps {
 
 function EmptyState({ onSuggestionClick }: EmptyStateProps) {
   const suggestions = [
-    'Tell me a fun fact',
-    'Help me brainstorm ideas',
-    'Explain something complex',
-    'Give me advice',
+    'Check my bill status',
+    'Report internet issue',
+    'Check for outages in my area',
+    'What are your fiber plans?',
   ]
 
   return (
@@ -159,10 +205,10 @@ function EmptyState({ onSuggestionClick }: EmptyStateProps) {
       </div>
       
       <h2 className="text-xl font-semibold text-pldt-gray mb-2">
-        Start a conversation
+        Kumusta! How can I help you today?
       </h2>
       <p className="text-base text-gray-500 max-w-md mb-8">
-        Send a message to begin chatting. We are here to help with whatever you need.
+        I'm Gabby, your PLDT customer service assistant. Ask me about billing, technical issues, or plans.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-lg">
