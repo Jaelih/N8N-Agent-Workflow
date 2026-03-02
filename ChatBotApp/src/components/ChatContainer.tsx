@@ -1,22 +1,11 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import type { Message } from './types'
+import type { Message } from '../types' 
 import MessageBubble from './MessageBubble'
 import ChatInput from './ChatInput'
 import TypingIndicator from './TypingIndicator'
-
-const MOCK_RESPONSES = [
-  "I'm here to help! What would you like to know?",
-  "That's an interesting question. Let me think about that...",
-  "I understand what you're asking. Here's what I think:",
-  "Good point! Based on what you've shared, I'd suggest:",
-  "Let me help you with that. Have you considered:",
-]
-
-const getRandomResponse = () => {
-  return MOCK_RESPONSES[Math.floor(Math.random() * MOCK_RESPONSES.length)]
-}
+import { api } from '../lib/api' // Import the API client
 
 export default function ChatContainer() {
   const [messages, setMessages] = useState<Message[]>([])
@@ -24,15 +13,21 @@ export default function ChatContainer() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
+  // Generate a random session ID once when the component mounts
+  // This ensures the conversation history is tracked correctly on the backend
+  const [sessionId] = useState(() => `session_${Math.random().toString(36).substr(2, 9)}`);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
+  // Auto-scroll whenever messages change or typing status changes
   useEffect(() => {
     scrollToBottom()
   }, [messages, isTyping])
 
-  const handleSendMessage = (content: string) => {
+  const handleSendMessage = async (content: string) => {
+    // 1. Create User Message object
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -40,20 +35,39 @@ export default function ChatContainer() {
       timestamp: new Date(),
     }
 
+    // 2. Add to UI immediately (Optimistic update)
     setMessages((prev) => [...prev, userMessage])
     setIsTyping(true)
 
-    // Mock bot response with realistic delay
-    setTimeout(() => {
+    try {
+      // 3. Send to Real Backend
+      // This calls the FastAPI /text-chat endpoint via your api.ts
+      const data = await api.sendMessage(content, sessionId);
+
+      // 4. Create Assistant Message from Backend Response
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: getRandomResponse(),
+        content: data.response, // Python returns: { "response": "..." }
         timestamp: new Date(),
       }
+
       setMessages((prev) => [...prev, assistantMessage])
+
+    } catch (error) {
+      console.error("Chat API Error:", error);
+      
+      // Handle Error gracefully in UI
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: "I'm sorry, I'm having trouble connecting to the server right now. Please try again.",
+        timestamp: new Date(),
+      }
+      setMessages((prev) => [...prev, errorMessage])
+    } finally {
       setIsTyping(false)
-    }, 1200 + Math.random() * 800)
+    }
   }
 
   return (
@@ -71,7 +85,7 @@ export default function ChatContainer() {
                 PLDT Support
               </h1>
               <p className="text-sm text-gray-500 mt-0.5">
-                Always here to help
+                Session: {sessionId}
               </p>
             </div>
           </div>
@@ -79,8 +93,8 @@ export default function ChatContainer() {
           {/* Right: Connection Status */}
           <div className="flex items-center gap-2">
             <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pldt-green opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-pldt-green"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
             </span>
             <span className="text-sm font-medium text-pldt-gray">Connected</span>
           </div>
@@ -112,6 +126,8 @@ export default function ChatContainer() {
     </div>
   )
 }
+
+// --- Helper Component: Empty State ---
 
 interface EmptyStateProps {
   onSuggestionClick: (suggestion: string) => void
