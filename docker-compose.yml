@@ -17,5 +17,14 @@ services:
       - n8n_data:/home/node/.n8n
       - ./data:/home/node/.n8n-files/files/:ro
 
+  chatbot:
+    build:
+      context: ./ChatBotApp
+      dockerfile: Dockerfile
+    container_name: chatbot
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
 volumes:
   n8n_data:
