@@ -1,23 +1,6 @@
 {
-  "name": "My workflow",
+  "name": "Amdocs | PLDT",
   "nodes": [
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "={{ $json.body.User_Request }}",
-        "options": {
-          "systemMessage": "# ROLE: Telco Security Firewall\nYou are a strict verification system. Your #1 rule is DATA PRIVACY. \nYou have access to \"customers\" and \"billings\" databases.\n\n# THE \"SILENT READ\" RULE (CRITICAL)\nWhen you use a tool to fetch customer data, you will see their Name, Email, and Phone.\n**YOU ARE FORBIDDEN FROM SPEAKING THESE VALUES.**\nYou may only output a database value IF AND ONLY IF the user has already typed that exact value in the chat.\n\n# VERIFICATION ALGORITHM (Execute Step-by-Step)\n\nSTEP 1: INITIAL INPUT\n- Ask for Name and Customer ID.\n- User says: \"I am [User_Input_Name], ID [User_Input_ID]\".\n\nSTEP 2: INTERNAL CHECK (Do This Silently)\n- Query the \"customers\" tool using [User_Input_ID].\n- Look at the \"name\" field in the result. Let's call this [DB_Real_Name].\n- COMPARE: Does [User_Input_Name] match [DB_Real_Name]?\n\nSTEP 3: THE DECISION POINT (Strict Branching)\n\n🔴 IF NAMES DO NOT MATCH:\n   - **STOP IMMEDIATELY.**\n   - OUTPUT THIS EXACT PHRASE: \"Identity verification failed. The name provided does not match the Customer ID in our records.\"\n   - **SECURITY BAN:** Do NOT say \"The ID belongs to Maria.\" Do NOT mention the real name. Do NOT ask for the email.\n\n🟢 IF NAMES MATCH:\n   - Say: \"Name confirmed. Please enter your registered email address to view billing details.\"\n   - Wait for [User_Input_Email].\n   - COMPARE [User_Input_Email] vs [DB_Real_Email].\n   - IF MISMATCH -> Say: \"Identity verification failed. Email does not match.\" (Do NOT reveal the real email).\n   - IF MATCH -> You may now fetch and show the billing info.\n\n# TECHNICAL SYNTAX\n- \"customer_id\" is a Number (e.g., 1002).\n- Do NOT use \"eq.\", quotes, or parentheses in the tool inputs.\n\n# FORMATTING RULES\n- Provide the response as a single, continuous line of text.\n- Do NOT use newlines (\\n), bullet points, or line breaks.\n- Use commas or semicolons to separate details instead."
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
-      "position": [
-        -592,
-        80
-      ],
-      "id": "b592aa67-14cb-46fe-ba9b-e490fec5ee94",
-      "name": "AI Agent"
-    },
     {
       "parameters": {
         "sessionIdType": "customKey",
@@ -27,10 +10,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -592,
-        288
+        2944,
+        2064
       ],
-      "id": "720c0941-d1a3-4ffc-ad7d-5e2d03890b19",
+      "id": "0d86f478-591d-4e0f-a1f7-aec1d10e2609",
       "name": "Simple Memory"
     },
     {
@@ -41,61 +24,77 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        -720,
-        288
+        2832,
+        2048
       ],
-      "id": "3107af29-dd8a-49d5-9983-84a8d7bc1a64",
+      "id": "dc8cd120-359d-48ac-9b9a-c665e94bd165",
       "name": "OpenRouter Chat Model",
       "credentials": {
         "openRouterApi": {
-          "id": "Od2uyUY6uBLTrS0v",
+          "id": "TBhVPmR7gGBVePdU",
           "name": "OpenRouter account"
         }
       }
     },
     {
       "parameters": {
-        "options": {}
+        "content": "## run before doing anything else\n- delete all nodes\n- import 'My workflow.json'\n\nin terminal:\n- docker compose down\n- docker compose up\n",
+        "height": 224,
+        "color": 4
       },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.5,
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
       "position": [
-        -304,
-        80
+        3584,
+        1776
       ],
-      "id": "5e4dacca-e80b-49f3-ab7d-d9bd51b5d8f2",
-      "name": "Respond to Webhook"
+      "id": "37f6156e-1505-4c87-85f9-79babc0f6007",
+      "name": "Sticky Note"
     },
     {
       "parameters": {
-        "model": "qwen3-embedding:8b"
+        "content": "human voice -> orchestrator/customer support agent -> specific tool",
+        "width": 256
       },
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -448,
-        448
+        3840,
+        1776
       ],
-      "id": "5d207a38-1004-48de-9fa9-b339c72a8f43",
-      "name": "Embeddings Ollama",
-      "credentials": {
-        "ollamaApi": {
-          "id": "N2qFk7YnyMoyaZD4",
-          "name": "Ollama account"
+      "id": "31f00f87-86f9-4af8-ab4a-aa3936d2aedf",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.User_Request }}",
+        "options": {
+          "systemMessage": "# ROLE\nYou are a detail-oriented support agent for a Telecommunications company responsible for providing customers about their billing information.\n\n# TASK\nYour task is to provide information asked by the customer and clarify any confusions without violating any rules and restrictions.\n\n# RESTRICTIONS\nYou are strictly a support agent for billings information. Any other types of requests should be respectfully denied. Only include information asked for by the customer in your response.\n\n# RESPONSE FORMAT\nYour responses, if no errors are encountered, should follow JSON format- only providing the requested information while omitting unnecessary words.\nex. {\"bill_id\": \"INV-2024-001\", \"customer_id\": 1001, \"amount_due\": 1699}\n\n# ERROR HANDLING\nIf you cannot retrieve the customer's information based on the provided customer ID, mention that there are no users with that customer ID and then politely request for a clarification on the customer ID.\n "
         }
-      }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3072,
+        1856
+      ],
+      "id": "3d6abc2b-e532-444a-a3da-4a1ff907bfff",
+      "name": "Billing Agent"
     },
     {
       "parameters": {
         "descriptionType": "manual",
-        "toolDescription": "get billing information in supabase using the customer's 'customer_id'",
-        "operation": "get",
-        "tableId": "billings",
+        "toolDescription": "Use this tool to retrieve customer billing information, including billing cycle, amount due, due date, payment status, and outstanding balance, from the 'billing' table using a specific customer ID.",
+        "operation": "getAll",
+        "tableId": "billing",
+        "matchType": "allFilters",
         "filters": {
           "conditions": [
             {
               "keyName": "customer_id",
-              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions1_Value', `The numeric ID of the customer (e.g., 1001). Do not provide strings or UUIDs.`, 'string') }}"
+              "condition": "eq",
+              "keyValue": "={{ $fromAI('customer_id', 'the customer\\'s ID as provided in the chat. Do not guess values. If you do not know what to input, ask for it respectfully.') }}"
             }
           ]
         }
@@ -103,14 +102,453 @@
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
       "position": [
-        -144,
-        288
+        3104,
+        2048
       ],
-      "id": "80481f1e-a13e-48c9-8842-dc6d39c3abcc",
-      "name": "billings",
+      "id": "704c683d-5194-4b82-bf30-94f8370692d5",
+      "name": "get billings",
       "credentials": {
         "supabaseApi": {
-          "id": "vymOy6EUH45nZ0Ug",
+          "id": "YknCFx3chWNwiQ3P",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "get billing information in supabase using the customer's 'customer_id'",
+        "operation": "update",
+        "tableId": "billing",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "bill_id",
+              "condition": "eq",
+              "keyValue": "={{ $fromAI('bill_id', `The bill ID linked with the customer (ex. INV-2024-001).`, 'string') }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        3328,
+        2080
+      ],
+      "id": "4f680d6d-11f0-47c5-a4ee-9f2dab9c4cfc",
+      "name": "delete bilings",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YknCFx3chWNwiQ3P",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "1",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2944,
+        2512
+      ],
+      "id": "714f8536-d873-4451-81ef-ced449011cc6",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3-coder",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2832,
+        2496
+      ],
+      "id": "184b44a6-24f6-4b3d-b712-a0303eecad20",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "TBhVPmR7gGBVePdU",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.User_Request }}",
+        "options": {
+          "systemMessage": "# ROLE\nYou are a detail-oriented support agent for a Telecommunications company responsible for providing customers about their general information.\n\n# TASK\nYour task is to provide information asked by the customer and clarify any confusions without violating any rules and restrictions.\n\n# RESTRICTIONS\n- You are strictly a support agent for customer information. Any other types of requests should be respectfully denied.\n- Only include information asked for by the customer in your response.\n- You can only call a tool once you know their ID and the information they want to get.\n\n# RESPONSE FORMAT\nYour responses, if no errors are encountered, should follow JSON format- only providing the requested information while omitting unnecessary words.\nex. {\"customer_id\": 1001, \"plan_type\": \"Fiber Unli 1699\"}\n\n# ERROR HANDLING\nIf you cannot retrieve the customer's information based on the provided customer ID, mention that a user with that customer ID does not exist and then politely request for a clarification on the customer ID.\n "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3072,
+        2304
+      ],
+      "id": "d992ba88-3fa3-4b29-a7f8-f37e86809695",
+      "name": "Customer Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "1",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2944,
+        2976
+      ],
+      "id": "a25174f4-3e9b-41da-a1ab-eac2a32749d4",
+      "name": "Simple Memory2"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3-coder",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2832,
+        2960
+      ],
+      "id": "ebbbf63d-0510-44b7-acd6-7fe3f7340187",
+      "name": "OpenRouter Chat Model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "TBhVPmR7gGBVePdU",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Billing",
+        "height": 448,
+        "width": 784,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2784,
+        1776
+      ],
+      "id": "f8238c94-1976-47e4-8dff-7460f6baa363",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Customer",
+        "height": 432,
+        "width": 784,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2784,
+        2240
+      ],
+      "id": "e824a37f-f207-4470-9c97-f6e38146b567",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# Ticket",
+        "height": 448,
+        "width": 784
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2784,
+        2688
+      ],
+      "id": "946fd709-250d-42e6-9b36-ac52e24557d1",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.User_Request }}",
+        "options": {
+          "systemMessage": "# ROLE\nYou are a helpful support agent for a Telecommunications company responsible for assisting customers about their current tickets' information.\n\n# TASK\nYour task is to provide information asked by the customer and clarify any confusions without violating any rules and restrictions.\n\n# RESTRICTIONS\n- You are strictly a support agent for tickets. Any other types of requests should be respectfully denied.\n- You should not provide any information unless you have confirmed their customer ID\n\n# RESPONSE FORMAT\nYour responses, if no errors are encountered, should follow JSON format- only providing the requested information while omitting unnecessary words.\nex. {\"customer_id\": 1001, \"status\": \"Closed\"}\n\n# ERROR HANDLING\nIf you cannot retrieve the customer's information based on the provided customer ID, mention that a user with that customer ID does not exist and then politely request for a clarification on the customer ID.\n "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3072,
+        2768
+      ],
+      "id": "e73a447f-f30f-49d9-b22a-3a87602d3845",
+      "name": "Ticket Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "1",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2944,
+        3424
+      ],
+      "id": "84af0358-7ef2-4e46-98ea-d12eb3686f49",
+      "name": "Simple Memory3"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3-coder",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2832,
+        3408
+      ],
+      "id": "501cb424-b06a-40e3-8592-bdc127fdea78",
+      "name": "OpenRouter Chat Model3",
+      "credentials": {
+        "openRouterApi": {
+          "id": "TBhVPmR7gGBVePdU",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Network",
+        "height": 448,
+        "width": 784,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2784,
+        3152
+      ],
+      "id": "73100d84-4d86-4782-8a03-e0eebd02f6c1",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.User_Request }}",
+        "options": {
+          "systemMessage": "# ROLE\nYou are a helpful network agent for a Telecommunications company responsible for assisting customers about the the network status in their area.\n\n# TASK\nYour task is to provide information asked by the customer and clarify any confusions without violating any rules and restrictions.\n\n# RESTRICTIONS\n- You are strictly a support agent for tickets. Any other types of requests should be respectfully denied.\n\n# RESPONSE FORMAT\nYour responses, if no errors are encountered, should follow JSON format- only providing the requested information while omitting unnecessary words.\nex. {\"customer_id\": 1001, \"status\": \"Closed\"}\n\n# ERROR HANDLING\nIf you cannot retrieve the customer's desired information politely request for a clarification or tell the reason why you cannot retrieve the information (ex. the information does not exist). \n "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3072,
+        3216
+      ],
+      "id": "90cc4a09-3a47-4256-9cf5-41db801df501",
+      "name": "Network Agent"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "3202ed58-9850-4cd8-b4e0-fe0c57066032",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        2896,
+        1856
+      ],
+      "id": "c7a2a686-9252-406b-89d8-9d37ad559121",
+      "name": "Billing Webhook",
+      "webhookId": "3202ed58-9850-4cd8-b4e0-fe0c57066032"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "0200b068-4cd5-4263-9445-42fb9914b64f",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        2896,
+        2304
+      ],
+      "id": "5fd989d1-c2c5-475e-b773-783460ec5083",
+      "name": "Customer Webhook",
+      "webhookId": "0200b068-4cd5-4263-9445-42fb9914b64f"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ba439e6f-6812-454b-a64e-9bd9a54e3cdb",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        2896,
+        2768
+      ],
+      "id": "2169dd05-a498-45c5-9150-c7fa08e9321c",
+      "name": "Ticket Webhook",
+      "webhookId": "ba439e6f-6812-454b-a64e-9bd9a54e3cdb"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "a72bbfa1-7a04-4703-a1cc-ee522747ccd8",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        2896,
+        3216
+      ],
+      "id": "c0bec474-06f1-482b-a4fd-d8fe313a77b1",
+      "name": "Network Webhook",
+      "webhookId": "a72bbfa1-7a04-4703-a1cc-ee522747ccd8"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "1",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2944,
+        3888
+      ],
+      "id": "db2946da-c60e-4464-b4e2-8b40c2ab0444",
+      "name": "Simple Memory4"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3-8b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2832,
+        3872
+      ],
+      "id": "b4c4bc44-8cdb-42d7-a718-28fe939d8dbc",
+      "name": "OpenRouter Chat Model4",
+      "credentials": {
+        "openRouterApi": {
+          "id": "TBhVPmR7gGBVePdU",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# General Knowledge",
+        "height": 576,
+        "width": 784,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2784,
+        3616
+      ],
+      "id": "12f25393-035d-4e10-b5d0-972ba283448a",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.User_Request }}",
+        "options": {
+          "systemMessage": "You are a helpful agent that knows about the following topics:\n- LOS red light\n- Slow Internet Speed\n- Billing Payment Channels\n\nif the user asks for any of these information, you can access the tool to retrieve the information."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3072,
+        3680
+      ],
+      "id": "104ed05a-bac9-490c-9c90-938892410ee0",
+      "name": "General Knowledge Agent"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "41828f4a-0ee2-405c-becf-f7d9fea19a56",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        2896,
+        3680
+      ],
+      "id": "dae6ad0f-1bfe-4082-86ba-d527b1b7663f",
+      "name": "General Knowledge Webhook",
+      "webhookId": "41828f4a-0ee2-405c-becf-f7d9fea19a56"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to retrieve customer information, including plan type, account status, modem/router serial number, etc. from the 'customers' table using a specific customer ID.",
+        "operation": "getAll",
+        "tableId": "customers",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "customer_id",
+              "condition": "eq",
+              "keyValue": "={{ $fromAI('customer_id', 'the customer\\'s ID as provided in the chat. Do not guess values. If you do not know what to input, ask for it respectfully.') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        3104,
+        2496
+      ],
+      "id": "8e4aff47-698e-4adc-81a1-1fb86b05cabd",
+      "name": "get customers",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YknCFx3chWNwiQ3P",
           "name": "Supabase account"
         }
       }
@@ -119,7 +557,7 @@
       "parameters": {
         "descriptionType": "manual",
         "toolDescription": "get customer account information using the customer's 'customer_id'",
-        "operation": "get",
+        "operation": "update",
         "tableId": "customers",
         "filters": {
           "conditions": [
@@ -133,14 +571,77 @@
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
       "position": [
-        -48,
-        288
+        3216,
+        2512
       ],
-      "id": "7cf7450f-e822-4aa1-a96d-798fc836b89a",
-      "name": "customers",
+      "id": "68fef103-22b1-422f-9988-cace83e6fcc2",
+      "name": "update customers",
       "credentials": {
         "supabaseApi": {
-          "id": "vymOy6EUH45nZ0Ug",
+          "id": "YknCFx3chWNwiQ3P",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "get customer account information using the customer's 'customer_id'",
+        "operation": "delete",
+        "tableId": "customers",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "customer_id",
+              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions0_Value', `The numeric ID of the customer (e.g., 1001). Do not provide strings or UUIDs.`, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        3328,
+        2528
+      ],
+      "id": "78f6764b-3327-450e-9d4f-2dc5ebfed838",
+      "name": "delete customers",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YknCFx3chWNwiQ3P",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to retrieve ticket information, including issue category, ticket status, date opened, and last agent note from the 'tickets' table using a specific customer ID.",
+        "operation": "getAll",
+        "tableId": "tickets",
+        "limit": 10,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "customer_id",
+              "condition": "eq",
+              "keyValue": "={{ $fromAI('customer_id', 'the customer\\'s ID as provided in the chat. Do not guess values. If you do not know what to input, ask for it respectfully.') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        3104,
+        2960
+      ],
+      "id": "96da3914-9417-4934-8b94-f09a62cc1b85",
+      "name": "read tickets",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YknCFx3chWNwiQ3P",
           "name": "Supabase account"
         }
       }
@@ -149,7 +650,7 @@
       "parameters": {
         "descriptionType": "manual",
         "toolDescription": "Retrieve ticket information from the database using either a ticket_id or a customer_id. \n\nUse this tool when the user asks about ticket status, existing support requests, issue progress, or support history. \n\nThis tool returns real-time ticket data from the system.\n",
-        "operation": "get",
+        "operation": "delete",
         "tableId": "tickets",
         "filters": {
           "conditions": [
@@ -163,14 +664,14 @@
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
       "position": [
-        48,
-        288
+        3328,
+        2992
       ],
-      "id": "99762741-1c37-4499-abad-71463db55924",
-      "name": "tickets",
+      "id": "1f011091-228c-4193-bac1-720434ffa396",
+      "name": "delete tickets",
       "credentials": {
         "supabaseApi": {
-          "id": "vymOy6EUH45nZ0Ug",
+          "id": "YknCFx3chWNwiQ3P",
           "name": "Supabase account"
         }
       }
@@ -179,20 +680,20 @@
       "parameters": {
         "descriptionType": "manual",
         "toolDescription": "get network status from a location using the information provided by the user like their location id, city, and area code.",
-        "operation": "getAll",
+        "operation": "delete",
         "tableId": "network_status"
       },
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
       "position": [
-        144,
-        288
+        3344,
+        3440
       ],
-      "id": "cf251258-76c8-4767-a39e-9c6e54126c0d",
-      "name": "network status",
+      "id": "66ae38d9-eb03-458c-8655-8cf587cfe5a2",
+      "name": "delete network status",
       "credentials": {
         "supabaseApi": {
-          "id": "vymOy6EUH45nZ0Ug",
+          "id": "YknCFx3chWNwiQ3P",
           "name": "Supabase account"
         }
       }
@@ -200,62 +701,246 @@
     {
       "parameters": {
         "mode": "retrieve-as-tool",
-        "toolDescription": "contains about frequently asked questions by customers",
+        "toolDescription": "use this tool if the customer asks about:\n- LOS Red Light\n- Slow Internet Speed\n- Billing Payment Channels",
         "tableName": {
           "__rl": true,
-          "value": "general knowledge",
+          "value": "rpc/match_documents",
           "mode": "list",
-          "cachedResultName": "general knowledge"
+          "cachedResultName": "rpc/match_documents"
         },
-        "topK": 0,
+        "topK": 40,
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        -448,
-        304
+        3136,
+        3888
       ],
-      "id": "987f22b0-de6f-4361-90d1-b12a52cf5cae",
+      "id": "5e419f25-4b97-4a14-abc4-6d07ca7f8fbc",
       "name": "knowledge base",
       "credentials": {
         "supabaseApi": {
-          "id": "vymOy6EUH45nZ0Ug",
+          "id": "YknCFx3chWNwiQ3P",
           "name": "Supabase account"
         }
       }
     },
     {
       "parameters": {
-        "httpMethod": "POST",
-        "path": "testing",
-        "responseMode": "responseNode",
-        "options": {}
+        "model": "qwen3-embedding:8b"
       },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
       "position": [
-        -768,
-        80
+        3136,
+        4032
       ],
-      "id": "c89b2d27-ba81-4ad2-80a2-1b57c49be247",
-      "name": "Webhook",
-      "webhookId": "3202ed58-9850-4cd8-b4e0-fe0c57066032"
+      "id": "3a99ae0b-b0fd-4d18-b009-7f7a5f9c6a89",
+      "name": "Embeddings Ollama",
+      "credentials": {
+        "ollamaApi": {
+          "id": "tIANWcgUxeV2ZDNU",
+          "name": "Ollama account"
+        }
+      }
     },
     {
       "parameters": {
-        "content": "## run before doing anything else\n- delete all nodes\n- import 'My workflow.json'\n\nin terminal:\n- docker compose down\n- docker compose up\n",
-        "height": 224,
-        "color": 4
+        "options": {}
       },
-      "type": "n8n-nodes-base.stickyNote",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        3376,
+        1856
+      ],
+      "id": "73a9fd3e-8edd-4805-b053-48098b90a9dc",
+      "name": "Respond to Billing Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        3376,
+        2304
+      ],
+      "id": "20ebe5a4-3ff7-4e3d-a657-8bb66cfe8271",
+      "name": "Respond to Customer Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        3376,
+        3216
+      ],
+      "id": "3cc27866-1482-4bca-99b2-db6a60de440e",
+      "name": "Respond to Network Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        3376,
+        3680
+      ],
+      "id": "5b55e9c6-1160-4f1e-b002-91f2f03c888b",
+      "name": "Respond to Knowledge Webhook"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to update the customer's billing amount from the 'billing' table using a specific customer ID.\n\nThis tool should only be used when the payment has been confirmed.\n\nOnce the payment has been confirmed, the paid amount should be subtracted from 'amount_due'.",
+        "operation": "update",
+        "tableId": "billing",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "customer_id",
+              "condition": "eq",
+              "keyValue": "=  {{ $fromAI('customer_id', 'the customer\\'s id as provided in the chat. Do not guess values. If you do not know what to input, ask for it respectfully.') }}"
+            },
+            {
+              "keyName": "bill_id",
+              "condition": "eq",
+              "keyValue": "={{ $fromAI('bill_id', 'the customer\\'s bill id as discussed in the chat. Do not guess values. If you\\'re not sure what to input, ask for it respectfully.') }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "amount_due",
+              "fieldValue": "={{ $fromAI('paid_amount', 'The amount paid by the customer as well as the value to subtract from ') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        3216,
+        2064
       ],
-      "id": "1b3c5ad8-9a38-40f1-8058-8e586423a03a",
-      "name": "Sticky Note"
+      "id": "a08330a6-b0dc-4059-a79d-8c52359c9dbc",
+      "name": "update amount due",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YknCFx3chWNwiQ3P",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Retrieve ticket information from the database using either a ticket_id or a customer_id. \n\nUse this tool when the user asks about ticket status, existing support requests, issue progress, or support history. \n\nThis tool returns real-time ticket data from the system.\n",
+        "operation": "update",
+        "tableId": "tickets",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "ticket_id",
+              "condition": "eq",
+              "keyValue": "={{ $fromAI('ticket_id', 'the ticket ID of the current conversation\\'s topic. Do not guess values. If you do not know what to input, ask for it respectfully.') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        3216,
+        2976
+      ],
+      "id": "ca3f188b-1814-4a0a-a241-812e84dd3c05",
+      "name": "update ticket status",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YknCFx3chWNwiQ3P",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "get network status from a location using the information provided by the user like their location id, city, and area code.",
+        "operation": "update",
+        "tableId": "network_status"
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        3216,
+        3424
+      ],
+      "id": "0ee8359e-689d-47fd-8dbe-439b4a3af621",
+      "name": "update network status",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YknCFx3chWNwiQ3P",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to retrieve network status of areas being repaired, including location ID, city, area code, status,  affected services, and estimated resolution time from the 'network_status' table using the location name provided by the customer.",
+        "operation": "getAll",
+        "tableId": "network_status",
+        "limit": 10,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "city",
+              "condition": "eq",
+              "keyValue": "={{ $fromAI('city', 'the city name as provided by the customer (Use camel case). Do not guess values. If you do not know what to input, ask for it respectfully.') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        3088,
+        3408
+      ],
+      "id": "fd3de593-b130-4219-b5ce-fed77d1835e1",
+      "name": "Read Network",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YknCFx3chWNwiQ3P",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        3376,
+        2768
+      ],
+      "id": "3ef6da78-1c88-4e43-a35c-ac4bb33c109b",
+      "name": "Respond to Ticket Webhook"
     }
   ],
   "pinData": {},
@@ -264,19 +949,275 @@
       "ai_memory": [
         [
           {
-            "node": "AI Agent",
+            "node": "Billing Agent",
             "type": "ai_memory",
             "index": 0
           }
         ]
       ]
     },
-    "AI Agent": {
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Billing Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Billing Agent": {
       "main": [
         [
           {
-            "node": "Respond to Webhook",
+            "node": "Respond to Billing Webhook",
             "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get billings": {
+      "ai_tool": [
+        [
+          {
+            "node": "Billing Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Customer Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Customer Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Customer Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Customer Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "Ticket Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Ticket Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ticket Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Ticket Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory3": {
+      "ai_memory": [
+        [
+          {
+            "node": "Network Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Network Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Network Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Network Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Billing Webhook": {
+      "main": [
+        [
+          {
+            "node": "Billing Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Customer Webhook": {
+      "main": [
+        [
+          {
+            "node": "Customer Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Network Webhook": {
+      "main": [
+        [
+          {
+            "node": "Network Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory4": {
+      "ai_memory": [
+        [
+          {
+            "node": "General Knowledge Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "General Knowledge Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "General Knowledge Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Knowledge Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "General Knowledge Webhook": {
+      "main": [
+        [
+          {
+            "node": "General Knowledge Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete bilings": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "get customers": {
+      "ai_tool": [
+        [
+          {
+            "node": "Customer Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update customers": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "delete customers": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "read tickets": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ticket Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete tickets": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "delete network status": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "knowledge base": {
+      "ai_tool": [
+        [
+          {
+            "node": "General Knowledge Agent",
+            "type": "ai_tool",
             "index": 0
           }
         ]
@@ -293,77 +1234,43 @@
         ]
       ]
     },
-    "OpenRouter Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
+    "update amount due": {
+      "ai_tool": [
+        []
       ]
     },
-    "billings": {
+    "update ticket status": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "update network status": {
       "ai_tool": [
         [
           {
-            "node": "AI Agent",
+            "node": "Network Agent",
             "type": "ai_tool",
             "index": 0
           }
         ]
       ]
     },
-    "customers": {
+    "Read Network": {
       "ai_tool": [
         [
           {
-            "node": "AI Agent",
+            "node": "Network Agent",
             "type": "ai_tool",
             "index": 0
           }
         ]
       ]
     },
-    "tickets": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "network status": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "knowledge base": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Webhook": {
+    "Ticket Webhook": {
       "main": [
         [
           {
-            "node": "AI Agent",
+            "node": "Ticket Agent",
             "type": "main",
             "index": 0
           }
@@ -371,17 +1278,17 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "192170d1-1a16-4a2d-9c7a-62a256638873",
+  "versionId": "cf9f231d-14d5-447d-8f3d-ed2e7a7a479b",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "00e5ff37b51a60791146217869936d1273dbfd4aee48938d13aa7629f378217a"
+    "instanceId": "6706564d2fe2eb9a69ad5152cc9c7ff9ced876386855f98d0502def674fe6a0d"
   },
-  "id": "PlL1S4pnnNabrpBr5VkN5",
+  "id": "7R6pTfJ3QU8ipdxs",
   "tags": []
 }
