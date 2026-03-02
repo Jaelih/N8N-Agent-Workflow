@@ -9,14 +9,10 @@ services:
       GENERIC_TIMEZONE: "Asia/Manila"
       N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
       N8N_BLOCK_FILE_ACCESS_TO_N8N_FILES: "false"
-      
-      # Fix: Added the N8N_ prefix to these variables
-      N8N_EDITOR_BASE_URL:  https://lozenged-differently-kelsie.ngrok-free.dev
-      WEBHOOK_URL: https://lozenged-differently-kelsie.ngrok-free.dev
-      
-      N8N_SECURE_COOKIE: "false"
-      # Fix: Trust ngrok as a proxy to avoid the ValidationError
-      N8N_PROXY_HOPS: 1
+      # Uncomment after setting up ngrok with:
+      # ngrok http 6789
+      EDITOR_BASE_URL: https://chieko-nonvisiting-konnor.ngrok-free.dev 
+      WEBHOOK_URL: https://chieko-nonvisiting-konnor.ngrok-free.dev 
     volumes:
       - n8n_data:/home/node/.n8n
       - ./data:/home/node/.n8n-files/files/:ro
