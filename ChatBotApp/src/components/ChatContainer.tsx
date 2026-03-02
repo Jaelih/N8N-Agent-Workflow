@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import type { Message } from '../types' 
+import type { Message } from '../components/types' 
 import MessageBubble from './MessageBubble'
 import ChatInput from './ChatInput'
 import TypingIndicator from './TypingIndicator'
@@ -92,7 +92,7 @@ export default function ChatContainer() {
         role: 'assistant',
         content: data.response_text,
         timestamp: new Date(),
-        audioUrl: api.getAudioUrl(data.audio_file),
+        audioUrl: data.audio_file ? api.getAudioUrl(data.audio_file) : undefined,
       }
       setMessages((prev) => [...prev, assistantMessage])
 

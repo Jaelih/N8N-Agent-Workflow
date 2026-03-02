@@ -1,3 +1,29 @@
 .env
 .vscode/
 
+# --- System Files ---
+.DS_Store
+Thumbs.db
+*.pem
+
+# --- Backend (Python FastAPI) ---
+backend/.venv/
+backend/__pycache__/
+backend/*.py[cod]
+backend/*.so
+backend/.env
+backend/.pytest_cache/
+backend/response_*.mp3
+backend/temp_*.wav
+
+# --- Frontend (React + Vite) ---
+ChatBotApp/node_modules/
+ChatBotApp/dist/
+ChatBotApp/.env
+ChatBotApp/.env.local
+ChatBotApp/npm-debug.log*
+
+# --- Build & Tooling ---
+ChatBotApp/*.tsbuildinfo
+.vscode/
+.idea/
