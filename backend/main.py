@@ -1,32 +1,70 @@
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from app.stt import transcribe_audio
 from app.tts import speak, get_remaining_credits
 from app.agent import run_agent
 from app.database import init_db, save_message, get_history, clear_history
-from fastapi.middleware.cors import CORSMiddleware
+
+# Import new route modules
+from app.routes_auth import router as auth_router
+from app.routes_tickets import router as tickets_router
+from app.routes_balance import router as balance_router
+from app.routes_calls import router as calls_router
 
 import shutil
 import os
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 init_db()
 
-app = FastAPI(title="PLDT Gabby Voice Agent")
-# 👇 UPDATED CORS SECTION 👇
+app = FastAPI(
+    title="PLDT Gabby Voice Agent API",
+    description="AI-powered customer service with voice, chat, and call center features",
+    version="2.0.0"
+)
+
+# CORS Configuration
 origins = [
-    "http://localhost:5173",    # Your React Frontend
+    "http://localhost:5173",    # React Frontend (Dev)
     "http://127.0.0.1:5173",    # Alternative Localhost
+    "http://localhost:3000",    # Production Frontend (Docker)
+    "http://127.0.0.1:3000",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,      # Explicitly allow your frontend
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],        # Allows the ngrok-skip header
+    allow_headers=["*"],
 )
+
+# Include new API routers
+app.include_router(auth_router)
+app.include_router(tickets_router)
+app.include_router(balance_router)
+app.include_router(calls_router)
+
+
+# Health check endpoint
+@app.get("/health")
+async def health_check():
+    """API health check"""
+    return {
+        "status": "healthy",
+        "version": "2.0.0",
+        "features": ["auth", "tickets", "balance", "calls", "voice", "chat"]
+    }
 
 @app.post("/voice-chat")
 async def voice_chat(
@@ -102,5 +140,11 @@ async def check_credits():
 
 
 @app.get("/health")
-async def health():
-    return {"status": "Gabby is running!"}
+async def health_check():
+    """API health check with feature status"""
+    return {
+        "status": "healthy",
+        "version": "2.0.0",
+        "service": "PLDT Gabby Voice Agent",
+        "features": ["auth", "tickets", "balance", "calls", "voice", "chat"]
+    }

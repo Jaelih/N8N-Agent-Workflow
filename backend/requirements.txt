@@ -1,4 +1,21 @@
+# Core dependencies
+fastapi
+uvicorn[standard]
+python-dotenv
+pydantic[email]
+
+# LangChain & AI
 langchain
 langchain_community
 langchain_openai
-python-dotenv
+
+# Authentication & Security
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+
+# HTTP client
+httpx
+
+# WebSocket support (included in uvicorn[standard] but explicit for clarity)
+websockets
