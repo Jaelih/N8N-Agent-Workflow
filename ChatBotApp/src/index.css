@@ -94,6 +94,19 @@
   .animate-pulse-subtle {
     animation: pulse-subtle 2s ease-in-out infinite;
   }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 3s ease-in-out infinite;
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite;
+  }
+
+  /* Custom z-index values */
+  .z-15 {
+    z-index: 15;
+  }
 }
 
 @keyframes slide-up {
@@ -123,4 +136,117 @@
   50% {
     opacity: 0.6;
   }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(214, 0, 28, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(214, 0, 28, 0.4);
+  }
+}
+
+/* PLDT Corporate Styles */
+.bg-pldt-red {
+  background-color: #D6001C;
+}
+
+.text-pldt-red {
+  color: #D6001C;
+}
+
+.border-pldt-red {
+  border-color: #D6001C;
+}
+
+/* Enterprise UI Components */
+.call-button {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.call-button::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(214, 0, 28, 0.2) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.call-button:hover::before {
+  opacity: 1;
+}
+
+.control-button {
+  backdrop-filter: blur(8px);
+  flex-shrink: 0;
+}
+
+/* Prevent content overflow */
+.overflow-safe {
+  overflow: hidden;
+  max-width: 100%;
+}
+
+/* Better flex children */
+.flex-safe {
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Smooth focus states for accessibility */
+*:focus-visible {
+  outline: 2px solid #D6001C;
+  outline-offset: 2px;
+}
+
+/* Scrollbar utilities */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Better mobile touch */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+.tap-highlight-transparent {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent horizontal scroll on mobile */
+body {
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Better text rendering */
+h1, h2, h3, h4, h5, h6 {
+  text-rendering: optimizeLegibility;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
 }

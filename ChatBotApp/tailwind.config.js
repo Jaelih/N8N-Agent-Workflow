@@ -50,8 +50,10 @@ module.exports = {
         },
         // PLDT Brand Colors
         pldt: {
-          red: "#D50032",
-          "red-dark": "#B8002A",
+          red: "#D6001C",
+          "red-dark": "#A00016",
+          "red-deep": "#7A0011",
+          "red-light": "#E6334D",
           gray: "#333333",
           "gray-light": "#F5F5F5",
           green: "#22C55E",
@@ -66,6 +68,8 @@ module.exports = {
       },
       boxShadow: {
         xs: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        glow: "0 0 24px rgba(214, 0, 28, 0.24), 0 0 48px rgba(214, 0, 28, 0.12)",
+        "glow-active": "0 0 32px rgba(214, 0, 28, 0.32), 0 0 64px rgba(214, 0, 28, 0.16)",
       },
       keyframes: {
         "accordion-down": {
