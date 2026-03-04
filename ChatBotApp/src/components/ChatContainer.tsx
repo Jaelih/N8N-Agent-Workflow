@@ -6,6 +6,7 @@ import MessageBubble from './MessageBubble'
 import ChatInput from './ChatInput'
 import TypingIndicator from './TypingIndicator'
 import { api } from '../lib/api' // Import the API client
+import { stopCurrentAudio } from '../lib/audioManager'
 
 export default function ChatContainer() {
   const [messages, setMessages] = useState<Message[]>([])
@@ -27,6 +28,9 @@ export default function ChatContainer() {
   }, [messages, isTyping])
 
   const handleSendMessage = async (content: string) => {
+    // Stop any playing assistant audio when user sends a message
+    stopCurrentAudio()
+
     // 1. Create User Message object
     const userMessage: Message = {
       id: Date.now().toString(),

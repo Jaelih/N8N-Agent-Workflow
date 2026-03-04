@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Button } from './ui/button'
+import { resumeAudioContext, stopCurrentAudio } from '../lib/audioManager'
 
 interface VoiceRecorderProps {
   onRecordingComplete: (audioBlob: Blob) => void
@@ -26,6 +27,11 @@ export default function VoiceRecorder({ onRecordingComplete, disabled }: VoiceRe
 
   const startRecording = async () => {
     try {
+      // Unlock AudioContext for iOS / Chrome autoplay on first user gesture
+      await resumeAudioContext()
+      // Stop any assistant audio before user starts speaking
+      stopCurrentAudio()
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       const mediaRecorder = new MediaRecorder(stream)
       mediaRecorderRef.current = mediaRecorder
