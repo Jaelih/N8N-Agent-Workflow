@@ -14,16 +14,35 @@ export default function VoiceRecorder({ onRecordingComplete, disabled }: VoiceRe
   const chunksRef = useRef<Blob[]>([])
   const timerRef = useRef<number | null>(null)
 
+  // Start/stop the timer based on isRecording state (separate from cleanup)
   useEffect(() => {
+    if (isRecording) {
+      setRecordingTime(0)
+      timerRef.current = window.setInterval(() => {
+        setRecordingTime(prev => prev + 1)
+      }, 1000)
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+        timerRef.current = null
+      }
+    }
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current)
-      }
-      if (mediaRecorderRef.current && isRecording) {
-        mediaRecorderRef.current.stop()
+        timerRef.current = null
       }
     }
   }, [isRecording])
+
+  // Stop media recorder on unmount
+  useEffect(() => {
+    return () => {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+        mediaRecorderRef.current.stop()
+      }
+    }
+  }, [])
 
   const startRecording = async () => {
     try {
@@ -47,17 +66,10 @@ export default function VoiceRecorder({ onRecordingComplete, disabled }: VoiceRe
         const audioBlob = new Blob(chunksRef.current, { type: 'audio/wav' })
         onRecordingComplete(audioBlob)
         stream.getTracks().forEach(track => track.stop())
-        setRecordingTime(0)
       }
 
       mediaRecorder.start()
       setIsRecording(true)
-      setRecordingTime(0)
-
-      // Start timer
-      timerRef.current = window.setInterval(() => {
-        setRecordingTime(prev => prev + 1)
-      }, 1000)
 
     } catch (error) {
       console.error('Error accessing microphone:', error)
@@ -69,10 +81,6 @@ export default function VoiceRecorder({ onRecordingComplete, disabled }: VoiceRe
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop()
       setIsRecording(false)
-      if (timerRef.current) {
-        clearInterval(timerRef.current)
-        timerRef.current = null
-      }
     }
   }
 

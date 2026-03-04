@@ -96,7 +96,7 @@ export default function ChatContainer() {
         role: 'assistant',
         content: data.response_text,
         timestamp: new Date(),
-        audioUrl: data.audio_file ? api.getAudioUrl(data.audio_file) : undefined,
+        audioUrl: data.audio_file ? api.getAudioUrl(data.audio_file) + `?t=${Date.now()}` : undefined,
       }
       setMessages((prev) => [...prev, assistantMessage])
 
