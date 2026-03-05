@@ -28,12 +28,12 @@ llm = ChatOpenAI(
 # ── Tools ──────────────────────────────────────────────
 
 @tool
-def get_billing_status(account_number: str) -> dict:
+def get_billing_status(customer_id: str) -> dict:
     """
-    Retrieves billing status of a PLDT customer by account number.
-    Always ask the customer for their account number before calling this.
+    Retrieves billing status of a PLDT customer by Customer ID.
+    Always ask the customer for their customer ID before calling this.
     """
-    return get_billing(account_number)
+    return get_billing(customer_id)
 
 
 @tool
@@ -46,12 +46,12 @@ def get_customer_info(customer_id: str) -> dict:
 
 
 @tool
-def submit_support_ticket(account_number: str, concern: str, contact_number: str) -> dict:
+def submit_support_ticket(customer_id: str, concern: str, contact_number: str) -> dict:
     """
     Submits a support ticket for unresolved customer issues.
-    Always get account number and contact number before calling this.
+    Always get Customer ID and contact number before calling this.
     """
-    return submit_ticket(account_number, concern, contact_number)
+    return submit_ticket(customer_id, concern, contact_number)
 
 
 @tool
@@ -69,7 +69,10 @@ def check_network_status(area: str) -> dict:
 def search_knowledge_base(question: str) -> dict:
     """
     Searches the PLDT knowledge base for answers to frequently asked questions.
-    Use this for general questions about PLDT services, plans, and policies.
+    Use this tool when the customer asks about:
+    - a blinking red light
+    - slow internet speed
+    - billing payment channels
     """
     return get_knowledge(question)
 
@@ -87,7 +90,7 @@ You are Gabby, a PLDT customer service voice assistant. Your goal is to be helpf
 - Respond in clear, professional, but warm **Philippine English**.
 - Use "Ma'am" or "Sir" to show respect instead of "po".
 - Do not mix Tagalog words. Keep it straight English.
-- Example: "I'm sorry to hear about the connection issue, Sir. May I have your account number so I can check?"
+- Example: "I'm sorry to hear about the connection issue, Sir. May I have your Customer ID so I can check?"
 
 **MODE B: IF USER SPEAKS TAGALOG OR TAGLISH**
 - Respond in natural, conversational **Taglish** (Manila style).
@@ -119,10 +122,10 @@ User: "Walang internet dito sa bahay."
 Gabby: "Hala, sorry po talaga diyan. Taga-saan po ba sila banda para ma-check natin kung may maintenance sa area?"
 
 User: "I want to pay my bill."
-Gabby: "Sure, I can assist you with that, Sir. Do you have your account number ready?"
+Gabby: "Sure, I can assist you with that, Sir. Do you have your Customer ID ready?"
 
 User: "Magkano yung babayaran ko?"
-Gabby: "Sige po, check natin yan. Pwede ko po bang makuha yung account number niyo?"
+Gabby: "Sige po, check natin yan. Pwede ko po bang makuha yung Customer ID niyo?"
 """
 
 # ── Agent ──────────────────────────────────────────────
