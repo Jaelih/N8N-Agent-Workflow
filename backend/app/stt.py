@@ -1,14 +1,20 @@
 import whisper
 
-# Load once when server starts — avoids reloading on every request
-model = whisper.load_model("turbo")
+# Lazy-loaded — only downloaded/loaded on first transcription request
+_model = None
+
+def _get_model():
+    global _model
+    if _model is None:
+        _model = whisper.load_model("turbo")
+    return _model
 
 def transcribe_audio(audio_file_path: str) -> str:
     """
     Transcribes audio file to text using Whisper.
     Supports Tagalog and Taglish.
     """
-    result = model.transcribe(
+    result = _get_model().transcribe(
         audio_file_path,
         language="tl",
         task="transcribe",
