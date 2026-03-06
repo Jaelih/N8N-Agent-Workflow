@@ -1,16 +1,26 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import type { Message } from '../components/types' 
+import { ReceiptText, Radio, Wrench, Wifi, Clock, Menu, PanelLeftOpen } from 'lucide-react'
+import type { Message } from '../components/types'
+import type { VoiceStatus } from './VoiceRecorder'
 import MessageBubble from './MessageBubble'
 import ChatInput from './ChatInput'
 import TypingIndicator from './TypingIndicator'
-import { api } from '../lib/api' // Import the API client
+import { api } from '../lib/api'
 import { stopCurrentAudio } from '../lib/audioManager'
+import pldtLogo from '../../img/PLDT-Logo.png'
+import pldtIcon from '../../img/PLDT-Icon.png'
 
-export default function ChatContainer() {
+interface ChatContainerProps {
+  onMenuClick?: () => void
+  sidebarOpen?: boolean
+}
+
+export default function ChatContainer({ onMenuClick, sidebarOpen }: ChatContainerProps = {}) {
   const [messages, setMessages] = useState<Message[]>([])
   const [isTyping, setIsTyping] = useState(false)
+  const [voiceStatus, setVoiceStatus] = useState<VoiceStatus>('idle')
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
@@ -74,11 +84,25 @@ export default function ChatContainer() {
     }
   }
 
+  const handleVoiceRecordingStart = () => {
+    setVoiceStatus('recording')
+  }
+
+  const handleVoiceRecordingError = (error: Error) => {
+    console.error('Microphone error:', error)
+    setVoiceStatus('error')
+    // Auto-reset after 3 s so the user can try again
+    setTimeout(() => setVoiceStatus('idle'), 3000)
+  }
+
   const handleVoiceMessage = async (audioBlob: Blob) => {
+    // Phase 1: transcribing
+    setVoiceStatus('processing')
     setIsTyping(true)
 
     try {
-      // Send voice to backend
+      // Phase 2: sending to AI backend
+      setVoiceStatus('sending')
       const data = await api.sendAudio(audioBlob, sessionId)
 
       // Add user's transcribed message
@@ -100,9 +124,15 @@ export default function ChatContainer() {
       }
       setMessages((prev) => [...prev, assistantMessage])
 
+      // Phase 3: done
+      setVoiceStatus('success')
+      setTimeout(() => setVoiceStatus('idle'), 2000)
+
     } catch (error) {
       console.error("Voice API Error:", error)
-      
+      setVoiceStatus('error')
+      setTimeout(() => setVoiceStatus('idle'), 3000)
+
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -116,60 +146,100 @@ export default function ChatContainer() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-white">
-      {/* PLDT Support Header */}
-      <header className="border-b border-gray-200 bg-white px-4 py-4 sm:px-6 shadow-sm">
-        <div className="max-w-3xl mx-auto flex items-center justify-between">
-          {/* Left: Logo and Title */}
+    <div className="flex flex-col h-full bg-white">
+
+      {/* ── Header ────────────────────────────────────────────── */}
+      <header className="bg-gradient-to-r from-[#B8002A] to-[#D50032] px-4 pt-4 pb-3 flex-shrink-0">
+        <div className="flex items-center justify-between">
+          {/* Left: hamburger (mobile) + bot avatar + name + logo */}
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-pldt-red rounded-lg flex items-center justify-center shadow-sm">
-              <span className="text-white font-bold text-sm">P</span>
+            {/* Hamburger — mobile only */}
+            <button
+              onClick={onMenuClick}
+              className="lg:hidden flex-shrink-0 p-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+              aria-label="Open menu"
+            >
+              <Menu className="w-5 h-5 text-white" />
+            </button>
+            {/* Desktop re-open button — only when sidebar is closed */}
+            {!sidebarOpen && (
+              <button
+                onClick={onMenuClick}
+                className="hidden lg:flex flex-shrink-0 p-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                aria-label="Open sidebar"
+                title="Open sidebar"
+              >
+                <PanelLeftOpen className="w-4 h-4 text-white" />
+              </button>
+            )}
+            {/* Bot avatar using PLDT icon */}
+            <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center
+              flex-shrink-0 shadow-md p-1.5 border border-white/20">
+              <img src={pldtIcon} alt="Gabby" className="w-full h-full object-contain" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-pldt-gray">
-                PLDT Support
-              </h1>
-              <p className="text-sm text-gray-500 mt-0.5">
-                Session: {sessionId}
-              </p>
+              <div className="flex items-center gap-2">
+                {/* PLDT logo in header */}
+                <img src={pldtLogo} alt="PLDT" className="h-4 object-contain brightness-0 invert" />
+                <span className="text-white font-semibold text-sm leading-none">Gabby</span>
+                <span className="bg-white/20 text-white text-[9px] font-bold px-1.5 py-0.5
+                  rounded-full tracking-wide">
+                  AI
+                </span>
+              </div>
+              <p className="text-white/70 text-[11px] mt-0.5">Customer Support Assistant</p>
             </div>
           </div>
-          
-          {/* Right: Connection Status */}
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+
+          {/* Right: online status */}
+          <div className="flex items-center gap-1.5">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
             </span>
-            <span className="text-sm font-medium text-pldt-gray">Connected</span>
+            <span className="text-white/90 font-semibold text-xs">Online</span>
           </div>
+        </div>
+
+        {/* Speed + trust bar */}
+        <div className="mt-3 bg-white/10 rounded-lg px-3 py-1.5 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Clock className="w-3 h-3 text-white/70 flex-shrink-0" />
+            <span className="text-white/80 text-[11px]">Replies in under <strong className="text-white">30 seconds</strong> · No hold time</span>
+          </div>
+          <span className="text-white/50 text-[10px] font-bold uppercase tracking-wide flex-shrink-0">Free</span>
         </div>
       </header>
 
-      {/* Messages Area */}
+      {/* ── Messages Area ───────────────────────────────────────── */}
       <div
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 bg-gray-50"
+        className="flex-1 overflow-y-auto bg-gray-50"
       >
-        <div className="max-w-3xl mx-auto space-y-6">
-          {messages.length === 0 ? (
-            <EmptyState onSuggestionClick={handleSendMessage} />
-          ) : (
-            <>
-              {messages.map((message) => (
-                <MessageBubble key={message.id} message={message} />
-              ))}
-              {isTyping && <TypingIndicator />}
-            </>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+        {messages.length === 0 ? (
+          /* Empty / onboarding state */
+          <div className="px-4 py-5">
+            <WelcomeCard onSuggestionClick={handleSendMessage} />
+          </div>
+        ) : (
+          /* Active conversation */
+          <div className="px-4 py-4 space-y-3">
+            {messages.map((message) => (
+              <MessageBubble key={message.id} message={message} />
+            ))}
+            {isTyping && <TypingIndicator />}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
       </div>
 
-      {/* Input Area */}
-      <ChatInput 
-        onSendMessage={handleSendMessage} 
+      {/* ── Input Area ──────────────────────────────────────────── */}
+      <ChatInput
+        onSendMessage={handleSendMessage}
         onVoiceMessage={handleVoiceMessage}
+        onVoiceRecordingStart={handleVoiceRecordingStart}
+        onVoiceRecordingError={handleVoiceRecordingError}
+        voiceStatus={voiceStatus}
         disabled={isTyping}
         voiceEnabled={true}
       />
@@ -177,64 +247,99 @@ export default function ChatContainer() {
   )
 }
 
-// --- Helper Component: Empty State ---
+// ── WelcomeCard ─────────────────────────────────────────────────────────────
 
-interface EmptyStateProps {
+interface WelcomeCardProps {
   onSuggestionClick: (suggestion: string) => void
 }
 
-function EmptyState({ onSuggestionClick }: EmptyStateProps) {
+function WelcomeCard({ onSuggestionClick }: WelcomeCardProps) {
   const suggestions = [
-    'Check my bill status',
-    'Report internet issue',
-    'Check for outages in my area',
-    'What are your fiber plans?',
+    { Icon: ReceiptText,   label: 'Check my bill status' },
+    { Icon: Radio,         label: 'Check outages in my area' },
+    { Icon: Wrench,        label: 'Report internet issue' },
+    { Icon: Wifi, label: 'What are your fiber plans?' },
   ]
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 animate-fade-in">
-      <div className="w-16 h-16 rounded-2xl bg-pldt-red flex items-center justify-center mb-6 shadow-md">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          className="w-8 h-8 text-white"
-        >
-          <path
-            fillRule="evenodd"
-            d="M4.804 21.644A6.707 6.707 0 006 21.75a6.721 6.721 0 003.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-9 0-5.03-4.428-9-9.75-9s-9.75 3.97-9.75 9c0 2.409 1.025 4.587 2.674 6.192.232.226.277.428.254.543a3.73 3.73 0 01-.814 1.686.75.75 0 00.44 1.223zM8.25 10.875a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25zM10.875 12a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0zm4.875-1.125a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </div>
-      
-      <h2 className="text-xl font-semibold text-pldt-gray mb-2">
-        Kumusta! How can I help you today?
-      </h2>
-      <p className="text-base text-gray-500 max-w-md mb-8">
-        I'm Gabby, your PLDT customer service assistant. Ask me about billing, technical issues, or plans.
-      </p>
+    <div className="animate-fade-in space-y-3">
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-lg">
-        {suggestions.map((suggestion, index) => (
-          <button
-            key={index}
-            onClick={() => onSuggestionClick(suggestion)}
-            className="px-4 py-3 rounded-xl text-sm text-left
-              bg-white
-              border border-gray-200
-              text-pldt-gray
-              hover:border-pldt-red
-              hover:bg-gray-50
-              transition-all duration-200
-              shadow-sm hover:shadow-md
-              group"
-          >
-            <span className="group-hover:text-pldt-red transition-colors">
-              {suggestion}
-            </span>
-          </button>
-        ))}
+      {/* ── Onboarding / intro bubble ────────────────────────── */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-9 h-9 rounded-full bg-white border border-gray-200
+            flex items-center justify-center flex-shrink-0 shadow-sm p-1.5">
+            <img src={pldtIcon} alt="Gabby" className="w-full h-full object-contain" />
+          </div>
+          <div>
+            <p className="font-semibold text-sm text-gray-900">Gabby · PLDT AI Assistant</p>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute h-full w-full rounded-full bg-green-400 opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-500" />
+              </span>
+              <span className="text-[11px] text-green-600 font-medium">Online · Replies instantly</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gray-50 rounded-xl p-3.5 border border-gray-100">
+          <p className="text-sm text-gray-700 leading-relaxed">
+            Hi! I'm <strong>Gabby</strong>, your personal PLDT assistant.
+            I can help you <strong>instantly</strong> with:
+          </p>
+          <ul className="mt-2.5 space-y-1.5">
+            {[
+              'Billing questions and payment inquiries',
+              'Internet connection and technical issues',
+              'Service outages in your area',
+              'Finding the best PLDT plan for you',
+            ].map((item) => (
+              <li key={item} className="flex items-center gap-2 text-xs text-gray-600">
+                <span className="w-1.5 h-1.5 rounded-full bg-pldt-red flex-shrink-0" />
+                {item}
+              </li>
+            ))}
+          </ul>
+          <p className="text-xs text-gray-400 mt-3">
+            No waiting. No hold music. Just ask below. ↓
+          </p>
+        </div>
+      </div>
+
+      {/* ── Quick action grid ────────────────────────────────── */}
+      <div>
+        <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2.5 px-0.5">
+          Quick Actions
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {suggestions.map(({ Icon, label }) => {
+            const isFiber = label.toLowerCase().includes('fiber')
+            return (
+              <button
+                key={label}
+                onClick={() => onSuggestionClick(label)}
+                className={`flex items-start gap-2.5 px-3.5 py-3 rounded-xl text-left
+                  active:scale-[0.97] transition-all duration-150 group
+                  ${isFiber
+                    ? 'bg-gradient-to-r from-[#C8002A] to-[#9A0020] border-0 hover:opacity-90'
+                    : 'border border-gray-200 bg-white hover:border-pldt-red hover:bg-red-50'
+                  }`}
+              >
+                <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors
+                  ${isFiber ? 'bg-white/20' : 'bg-gray-100 group-hover:bg-red-100'}`}>
+                  <Icon className={`w-3.5 h-3.5 transition-colors
+                    ${isFiber ? 'text-white' : 'text-gray-500 group-hover:text-pldt-red'}`} />
+                </div>
+                <span className={`text-xs font-semibold leading-snug transition-colors
+                  ${isFiber ? 'text-white font-bold' : 'text-gray-700 group-hover:text-pldt-red'}`}>
+                  {label}
+                </span>
+                {isFiber && <span className="ml-auto text-white/60 text-xs self-center">→</span>}
+              </button>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

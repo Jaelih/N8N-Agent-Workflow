@@ -1,20 +1,88 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { Mic, Loader2 } from 'lucide-react'
 import { Button } from './ui/button'
 import { resumeAudioContext, stopCurrentAudio } from '../lib/audioManager'
 
+export type VoiceStatus = 'idle' | 'recording' | 'processing' | 'sending' | 'success' | 'error'
+
+// 5 frequency-band indices sampled from the analyser's 256-bin array.
+// These cover roughly: sub-bass, bass, low-mid, mid, high-mid.
+const BAND_INDICES = [3, 8, 18, 38, 75]
+const MIN_H = 3   // px — resting height when silent
+const MAX_H = 20  // px — max height at full volume
+const LERP  = 0.28 // smoothing factor (0 = frozen, 1 = instant)
+
 interface VoiceRecorderProps {
   onRecordingComplete: (audioBlob: Blob) => void
+  onRecordingStart?: () => void
+  onRecordingError?: (error: Error) => void
+  voiceStatus?: VoiceStatus
   disabled?: boolean
 }
 
-export default function VoiceRecorder({ onRecordingComplete, disabled }: VoiceRecorderProps) {
-  const [isRecording, setIsRecording] = useState(false)
+export default function VoiceRecorder({
+  onRecordingComplete,
+  onRecordingStart,
+  onRecordingError,
+  voiceStatus = 'idle',
+  disabled,
+}: VoiceRecorderProps) {
+  const [isRecording, setIsRecording]   = useState(false)
   const [recordingTime, setRecordingTime] = useState(0)
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
-  const chunksRef = useRef<Blob[]>([])
-  const timerRef = useRef<number | null>(null)
+  // Live bar heights driven by Web Audio AnalyserNode
+  const [barHeights, setBarHeights]     = useState<number[]>([MIN_H, MIN_H, MIN_H, MIN_H, MIN_H])
 
-  // Start/stop the timer based on isRecording state (separate from cleanup)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const chunksRef        = useRef<Blob[]>([])
+  const timerRef         = useRef<number | null>(null)
+  const audioCtxRef      = useRef<AudioContext | null>(null)
+  const analyserRef      = useRef<AnalyserNode | null>(null)
+  const rafRef           = useRef<number | null>(null)
+  // Smoothed heights live outside React state to avoid stale-closure issues
+  const smoothRef        = useRef<number[]>([MIN_H, MIN_H, MIN_H, MIN_H, MIN_H])
+
+  // ── Audio-level animation loop ───────────────────────────────────────────
+  const startAnalyserLoop = useCallback(() => {
+    const analyser = analyserRef.current
+    if (!analyser) return
+    const data = new Uint8Array(analyser.frequencyBinCount)
+
+    const tick = () => {
+      analyser.getByteFrequencyData(data)
+
+      const next = BAND_INDICES.map((binIdx) => {
+        // Average 3 adjacent bins for a slightly smoother reading
+        const avg = (data[binIdx - 1] + data[binIdx] + data[binIdx + 1]) / 3
+        return MIN_H + (avg / 255) * (MAX_H - MIN_H)
+      })
+
+      // Lerp toward target heights
+      smoothRef.current = smoothRef.current.map((cur, i) =>
+        cur + (next[i] - cur) * LERP
+      )
+
+      setBarHeights([...smoothRef.current])
+      rafRef.current = requestAnimationFrame(tick)
+    }
+
+    rafRef.current = requestAnimationFrame(tick)
+  }, [])
+
+  const stopAnalyserLoop = useCallback(() => {
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
+    }
+    analyserRef.current?.disconnect()
+    analyserRef.current = null
+    // Close context asynchronously so MediaRecorder can finish
+    audioCtxRef.current?.close().catch(() => {})
+    audioCtxRef.current = null
+    smoothRef.current = [MIN_H, MIN_H, MIN_H, MIN_H, MIN_H]
+    setBarHeights([MIN_H, MIN_H, MIN_H, MIN_H, MIN_H])
+  }, [])
+
+  // ── Timer ────────────────────────────────────────────────────────────────
   useEffect(() => {
     if (isRecording) {
       setRecordingTime(0)
@@ -35,31 +103,39 @@ export default function VoiceRecorder({ onRecordingComplete, disabled }: VoiceRe
     }
   }, [isRecording])
 
-  // Stop media recorder on unmount
+  // ── Cleanup on unmount ───────────────────────────────────────────────────
   useEffect(() => {
     return () => {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      if (mediaRecorderRef.current?.state === 'recording') {
         mediaRecorderRef.current.stop()
       }
+      stopAnalyserLoop()
     }
-  }, [])
+  }, [stopAnalyserLoop])
 
+  // ── Start / Stop ─────────────────────────────────────────────────────────
   const startRecording = async () => {
     try {
-      // Unlock AudioContext for iOS / Chrome autoplay on first user gesture
       await resumeAudioContext()
-      // Stop any assistant audio before user starts speaking
       stopCurrentAudio()
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+
+      // Set up Web Audio AnalyserNode on the live mic stream
+      const audioCtx = new AudioContext()
+      const analyser = audioCtx.createAnalyser()
+      analyser.fftSize = 256
+      analyser.smoothingTimeConstant = 0.6
+      audioCtx.createMediaStreamSource(stream).connect(analyser)
+      audioCtxRef.current = audioCtx
+      analyserRef.current = analyser
+
       const mediaRecorder = new MediaRecorder(stream)
       mediaRecorderRef.current = mediaRecorder
       chunksRef.current = []
 
       mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunksRef.current.push(event.data)
-        }
+        if (event.data.size > 0) chunksRef.current.push(event.data)
       }
 
       mediaRecorder.onstop = () => {
@@ -70,10 +146,12 @@ export default function VoiceRecorder({ onRecordingComplete, disabled }: VoiceRe
 
       mediaRecorder.start()
       setIsRecording(true)
+      onRecordingStart?.()
+      startAnalyserLoop()
 
     } catch (error) {
       console.error('Error accessing microphone:', error)
-      alert('Unable to access microphone. Please check permissions.')
+      onRecordingError?.(error instanceof Error ? error : new Error('Microphone access denied'))
     }
   }
 
@@ -81,6 +159,7 @@ export default function VoiceRecorder({ onRecordingComplete, disabled }: VoiceRe
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop()
       setIsRecording(false)
+      stopAnalyserLoop()
     }
   }
 
@@ -90,52 +169,67 @@ export default function VoiceRecorder({ onRecordingComplete, disabled }: VoiceRe
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
+  // Derive button disabled state — block button when processing/sending
+  const isBusy = voiceStatus === 'processing' || voiceStatus === 'sending'
+  const isButtonDisabled = disabled || isBusy
+
   return (
-    <div className="flex items-center gap-3">
-      {isRecording && (
-        <div className="flex items-center gap-2 px-3 py-1 bg-red-50 rounded-full animate-pulse">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-          </span>
-          <span className="text-sm font-medium text-red-600">
+    <div className="flex items-center flex-shrink-0">
+
+      {/* ── Recording: waveform circle + timer ────────────────────── */}
+      {isRecording ? (
+        <div className="flex items-center gap-2">
+          {/* Sound wave circle button — click to stop */}
+          <button
+            onClick={stopRecording}
+            aria-label="Stop recording"
+            className="relative flex items-center justify-center h-10 w-10 rounded-full
+              bg-red-500 shadow-lg
+              hover:bg-red-600 active:scale-95
+              transition-all duration-150
+              focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+          >
+            {/* Outer glow ring */}
+            <span className="absolute inset-0 rounded-full bg-red-400 opacity-30 animate-ping" />
+            {/* 5 bars driven by live audio levels */}
+            <div className="relative flex items-center gap-[3px]">
+              {barHeights.map((h, i) => (
+                <div
+                  key={i}
+                  className="w-[3px] rounded-full bg-white"
+                  style={{
+                    height: `${h}px`,
+                    transition: 'height 40ms linear',
+                  }}
+                />
+              ))}
+            </div>
+          </button>
+          {/* Timer */}
+          <span className="text-sm font-medium text-red-600 tabular-nums">
             {formatTime(recordingTime)}
           </span>
         </div>
+      ) : (
+        /* ── Idle / busy: normal mic button ──────────────────────── */
+        <Button
+          onClick={startRecording}
+          disabled={isButtonDisabled}
+          size="icon"
+          aria-label="Start voice message"
+          className={`rounded-full h-10 w-10 shadow-md hover:shadow-lg transition-all ${
+            voiceStatus === 'error' ? 'ring-2 ring-red-400' : ''
+          }`}
+        >
+          {isBusy ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <Mic className="w-5 h-5" />
+          )}
+        </Button>
       )}
-
-      <Button
-        onClick={isRecording ? stopRecording : startRecording}
-        disabled={disabled}
-        variant={isRecording ? 'destructive' : 'default'}
-        size="icon"
-        className="rounded-full h-10 w-10 shadow-md hover:shadow-lg transition-all"
-      >
-        {isRecording ? (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="w-5 h-5"
-          >
-            <path
-              fillRule="evenodd"
-              d="M4.5 7.5a3 3 0 013-3h9a3 3 0 013 3v9a3 3 0 01-3 3h-9a3 3 0 01-3-3v-9z"
-              clipRule="evenodd"
-            />
-          </svg>
-        ) : (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="w-5 h-5"
-          >
-            <path d="M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z" />
-            <path d="M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z" />
-          </svg>
-        )}
-      </Button>
     </div>
   )
 }
+
+
