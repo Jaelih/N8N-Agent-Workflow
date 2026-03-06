@@ -10,8 +10,6 @@ services:
       N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
       N8N_BLOCK_FILE_ACCESS_TO_N8N_FILES: "false"
       N8N_TRUSTPROXY: "true"
-
-      # Set URL variable in .env file
       EDITOR_BASE_URL: ${NGROK_URL}
       WEBHOOK_URL: ${NGROK_URL}
     volumes:
@@ -39,6 +37,7 @@ services:
     volumes:
       - ./backend:/app
       - backend_db:/app/db
+      - backend_audio:/app/audio    # ← add this
     restart: unless-stopped
     depends_on:
       - n8n
@@ -57,3 +56,4 @@ services:
 volumes:
   n8n_data:
   backend_db:
+  backend_audio:    # ← add this

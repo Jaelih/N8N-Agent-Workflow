@@ -56,16 +56,16 @@ async def voice_chat(
     save_message(session_id, "assistant", agent_response)
 
     # Step 5: TTS
-    audio_path = f"/app/audio/response_{session_id}.mp3"
+    filename = f"response_{session_id}.mp3"
+    audio_path = f"/app/audio/{filename}"
     await speak(agent_response, output_path=audio_path)
 
     return {
         "session_id": session_id,
         "transcript": user_text,
         "response_text": agent_response,
-        "audio_file": audio_path
+        "audio_file": filename    # ← change from audio_path to filename
     }
-
 
 @app.post("/text-chat")
 async def text_chat(body: dict):
