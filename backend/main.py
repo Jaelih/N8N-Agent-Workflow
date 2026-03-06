@@ -18,6 +18,8 @@ app = FastAPI(title="PLDT Gabby Voice Agent")
 origins = [
     "http://localhost:5173",    # Your React Frontend
     "http://127.0.0.1:5173",    # Alternative Localhost
+    "http://localhost:3000",    # Docker nginx ← this is missing!
+    "http://127.0.0.1:3000",   # Docker nginx alternative
 ]
 
 app.add_middleware(
@@ -54,7 +56,7 @@ async def voice_chat(
     save_message(session_id, "assistant", agent_response)
 
     # Step 5: TTS
-    audio_path = f"response_{session_id}.mp3"
+    audio_path = f"/app/audio/response_{session_id}.mp3"
     await speak(agent_response, output_path=audio_path)
 
     return {
@@ -82,11 +84,11 @@ async def text_chat(body: dict):
         "response": response
     }
 
-
 @app.get("/audio/{filename}")
 async def get_audio(filename: str):
-    if os.path.exists(filename):
-        return FileResponse(filename, media_type="audio/mpeg")
+    path = f"/app/audio/{filename}"
+    if os.path.exists(path):
+        return FileResponse(path, media_type="audio/mpeg")
     return {"error": "Audio file not found"}
 
 
