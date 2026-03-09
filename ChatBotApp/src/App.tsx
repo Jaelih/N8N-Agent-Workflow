@@ -46,32 +46,32 @@ function App() {
       >
         {/* ── Brand / greeting ─────────────────────────────────── */}
         <div className="px-6 pt-6 pb-5 border-b border-gray-100">
-          <div className="flex items-center justify-between mb-4">
-            <img src={pldtLogo} alt="PLDT" className="h-8 object-contain" />
+          <div className="flex items-center justify-between mb-5">
+            <img src={pldtLogo} alt="PLDT" className="h-9 object-contain" />
             <button
               onClick={() => setSidebarOpen(false)}
-              className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
               title="Close sidebar"
             >
               <PanelLeftClose className="w-4 h-4" />
             </button>
           </div>
-          <div className="flex items-center gap-1.5 mb-3">
-            <Award className="w-3.5 h-3.5 text-amber-500" />
-            <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wide">
+          <div className="flex items-center gap-2 mb-3.5">
+            <Award className="w-4 h-4 text-amber-500" />
+            <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wider">
               Philippines' #1 Fiber Provider
             </span>
           </div>
-          <h2 className="text-xl font-bold text-gray-900 leading-tight">
+          <h2 className="text-xl font-bold text-gray-900 leading-tight mb-1.5">
             We're here to help you.
           </h2>
-          <p className="text-gray-500 text-sm mt-1 leading-relaxed">
+          <p className="text-gray-500 text-sm leading-relaxed">
             Chat with Gabby for instant support, or explore our latest plans and offers below.
           </p>
         </div>
 
         {/* ── FAQ / Help Center link ───────────────────────────── */}
-        <div className="px-6 py-4 border-b border-gray-100">
+        <div className="px-6 py-5 border-b border-gray-100">
           <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">
             Quick Help
           </p>
@@ -79,13 +79,13 @@ function App() {
             href="https://pldthome.com/support"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 w-full p-3.5 rounded-xl
-              border border-gray-200 bg-white
+            className="flex items-center gap-3 w-full p-4 rounded-xl
+              border-2 border-gray-200 bg-white
               hover:border-pldt-red hover:bg-red-50
-              active:scale-[0.98] transition-all duration-150 group"
+              active:scale-[0.98] transition-all duration-150 group shadow-sm"
           >
             <BookOpen className="w-4 h-4 text-gray-400 group-hover:text-pldt-red flex-shrink-0 transition-colors" />
-            <span className="text-sm font-semibold text-gray-700 group-hover:text-pldt-red transition-colors">
+            <span className="text-sm font-bold text-gray-700 group-hover:text-pldt-red transition-colors">
               Browse FAQ & Help Center
             </span>
             <span className="ml-auto text-gray-400 group-hover:text-pldt-red text-sm transition-colors">→</span>
@@ -94,44 +94,44 @@ function App() {
 
         {/* ── Fiber advertisement card ──────────────────────────── */}
         <div className="px-6 py-5 border-b border-gray-100">
-          <div className="rounded-2xl bg-gradient-to-br from-[#C8002A] to-[#780018] p-5 text-white shadow-md">
+          <div className="rounded-2xl bg-gradient-to-br from-[#C8002A] to-[#780018] p-5 text-white shadow-lg hover:shadow-xl transition-shadow">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Wifi className="w-3.5 h-3.5" />
+                <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Wifi className="w-4 h-4" />
                 </div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-white/60">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">
                   Now Available
                 </span>
               </div>
               <span className="bg-amber-400 text-amber-900 text-[10px] font-extrabold
-                px-2 py-0.5 rounded-full uppercase tracking-wide">
+                px-2.5 py-1 rounded-full uppercase tracking-wide shadow-sm">
                 Most Popular
               </span>
             </div>
-            <h3 className="font-extrabold text-[16px] leading-snug mb-1">
+            <h3 className="font-extrabold text-[17px] leading-snug mb-2">
               Stream, Work & Game<br />Without Limits
             </h3>
-            <div className="flex items-baseline gap-1.5 mb-2">
+            <div className="flex items-baseline gap-2 mb-3">
               <span className="text-white/50 text-xs line-through">₱1,699/mo</span>
-              <span className="text-white font-extrabold text-lg">₱1,299</span>
+              <span className="text-white font-extrabold text-xl">₱1,299</span>
               <span className="text-white/70 text-xs">/mo</span>
             </div>
-            <div className="flex items-center gap-1.5 mb-4">
-              <Users className="w-3 h-3 text-white/50" />
-              <span className="text-white/60 text-[11px]">Trusted by 1M+ Filipino households</span>
+            <div className="flex items-center gap-1.5 mb-3.5">
+              <Users className="w-3.5 h-3.5 text-white/60" />
+              <span className="text-white/70 text-[11px]">Trusted by 1M+ Filipino households</span>
             </div>
-            <div className="flex items-center gap-1.5 mb-2.5">
-              <MapPin className="w-3 h-3 text-white/50 flex-shrink-0" />
-              <span className="text-white/60 text-[11px]">Limited slots available in your area</span>
+            <div className="flex items-center gap-1.5 mb-3.5">
+              <MapPin className="w-3.5 h-3.5 text-white/60 flex-shrink-0" />
+              <span className="text-white/70 text-[11px]">Limited slots available in your area</span>
             </div>
             <a
               href="https://pldthome.com/fiber?gad_source=1&gad_campaignid=15787909598&gbraid=0AAAAADqA8v53qpMiF8BSjoE63mtOq5-EE"
               target="_blank"
               rel="noopener noreferrer"
-              className="block w-full bg-white text-[#C8002A] text-xs font-extrabold
-                py-2.5 rounded-xl hover:bg-gray-50 active:scale-[0.98]
-                transition-all text-center"
+              className="block w-full bg-white text-[#C8002A] text-sm font-extrabold
+                py-3 rounded-xl hover:bg-gray-50 active:scale-[0.98]
+                transition-all text-center shadow-md hover:shadow-lg"
             >
               Claim Your Fiber Plan →
             </a>
@@ -140,34 +140,34 @@ function App() {
 
         {/* ── Promos card ──────────────────────────────────────── */}
         <div className="px-6 py-5 border-b border-gray-100">
-          <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-            <div className="flex items-center justify-between mb-2.5">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
+          <div className="rounded-2xl border-2 border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
                   <Tag className="w-4 h-4 text-pldt-red" />
                 </div>
                 <span className="text-sm font-bold text-gray-900">Exclusive Promos</span>
               </div>
               <span className="bg-green-100 text-green-700 text-[10px] font-bold
-                px-2 py-0.5 rounded-full uppercase tracking-wide">
+                px-2.5 py-1 rounded-full uppercase tracking-wide">
                 New
               </span>
             </div>
-            <p className="text-xs text-gray-500 leading-relaxed mb-1">
+            <p className="text-xs text-gray-500 leading-relaxed mb-2">
               Don't miss out — special rates, bundles, and limited-time offers
               for new <strong className="text-gray-700">and</strong> existing subscribers.
             </p>
-            <div className="flex items-center gap-1.5 mb-3.5">
-              <Timer className="w-3 h-3 text-amber-500 flex-shrink-0" />
+            <div className="flex items-center gap-1.5 mb-4">
+              <Timer className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
               <span className="text-[11px] text-amber-600 font-semibold">Some offers end soon</span>
             </div>
             <a
               href="https://pldthome.com/promos"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full border border-pldt-red
-                text-pldt-red text-xs font-bold py-2.5 rounded-xl
-                hover:bg-red-50 active:scale-[0.98] transition-all text-center"
+              className="flex items-center justify-center gap-2 w-full border-2 border-pldt-red
+                text-pldt-red text-xs font-bold py-3 rounded-xl
+                hover:bg-red-50 active:scale-[0.98] transition-all text-center shadow-sm"
             >
               Browse All Promos →
             </a>

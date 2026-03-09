@@ -49,42 +49,44 @@ export default function ChatInput({
   }, [input])
 
   return (
-    <div className="border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
-      <div className="max-w-3xl mx-auto">
+    <div className="border-t-2 border-gray-100 bg-gradient-to-b from-white to-gray-50/50 px-4 py-4 sm:px-6 shadow-2xl">
+      <div className="max-w-4xl mx-auto">
 
         {/* ── Voice status banner — floats above the row, never shifts layout ── */}
         <div className={`overflow-hidden transition-all duration-300 ${
-          voiceStatus !== 'idle' && voiceStatus !== 'recording' ? 'max-h-10 mb-2' : 'max-h-0 mb-0'
+          voiceStatus !== 'idle' && voiceStatus !== 'recording' ? 'max-h-12 mb-3' : 'max-h-0 mb-0'
         }`}>
           {voiceStatus === 'processing' && (
-            <div className="flex items-center justify-center gap-2 py-1.5 bg-blue-50 rounded-lg">
-              <Loader2 className="h-3.5 w-3.5 text-blue-500 animate-spin" />
-              <span className="text-xs font-medium text-blue-600">Processing voice message…</span>
+            <div className="flex items-center justify-center gap-2 py-2 bg-gradient-to-r from-blue-50 to-blue-100/50 rounded-2xl border-2 border-blue-200 shadow-lg">
+              <Loader2 className="h-4 w-4 text-blue-600 animate-spin" />
+              <span className="text-xs font-semibold text-blue-700">Processing voice message…</span>
             </div>
           )}
           {voiceStatus === 'sending' && (
-            <div className="flex items-center justify-center gap-2 py-1.5 bg-gray-50 rounded-lg">
-              <Loader2 className="h-3.5 w-3.5 text-gray-400 animate-spin" />
-              <span className="text-xs font-medium text-gray-500">Sending message…</span>
+            <div className="flex items-center justify-center gap-2 py-2 bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-2xl border-2 border-gray-200 shadow-lg">
+              <Loader2 className="h-4 w-4 text-gray-500 animate-spin" />
+              <span className="text-xs font-semibold text-gray-600">Sending message…</span>
             </div>
           )}
           {voiceStatus === 'success' && (
-            <div className="flex items-center justify-center gap-2 py-1.5 bg-green-50 rounded-lg animate-fade-in">
-              <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
-              <span className="text-xs font-medium text-green-600">Message sent!</span>
+            <div className="flex items-center justify-center gap-2 py-2 bg-gradient-to-r from-green-50 to-green-100/50 rounded-2xl border-2 border-green-200 shadow-lg animate-fade-in">
+              <CheckCircle2 className="h-4 w-4 text-green-600" />
+              <span className="text-xs font-semibold text-green-700">Message sent!</span>
             </div>
           )}
           {voiceStatus === 'error' && (
-            <div className="flex items-center justify-center gap-2 py-1.5 bg-red-50 rounded-lg animate-fade-in">
-              <XCircle className="h-3.5 w-3.5 text-red-500" />
-              <span className="text-xs font-medium text-red-600">Voice message failed. Please try again.</span>
+            <div className="flex items-center justify-center gap-2 py-2 bg-gradient-to-r from-red-50 to-red-100/50 rounded-2xl border-2 border-red-200 shadow-lg animate-fade-in">
+              <XCircle className="h-4 w-4 text-red-600" />
+              <span className="text-xs font-semibold text-red-700">Voice message failed. Please try again.</span>
             </div>
           )}
         </div>
 
-        {/* ── Input row — width never changes ────────────────────────────── */}
-        <div className="flex items-end gap-2">
-          <div className="flex-1">
+        {/* ── Input row — modern rounded design ────────────────────────────── */}
+        <div className="flex items-end gap-3">
+          <div className="flex-1 relative">
+            {/* Subtle glow effect behind input */}
+            <div className="absolute inset-0 bg-gradient-to-r from-pldt-red/5 to-pldt-red-dark/5 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity" />
             <textarea
               ref={textareaRef}
               value={input}
@@ -93,32 +95,34 @@ export default function ChatInput({
               placeholder="Type your message..."
               disabled={disabled}
               rows={1}
-              className="w-full resize-none rounded-xl px-4 py-3 text-base
-                bg-gray-50
-                border border-gray-200
+              className="relative w-full resize-none rounded-2xl px-5 py-4 text-sm
+                bg-white
+                border-2 border-gray-200
                 text-pldt-gray
                 placeholder:text-gray-400
-                focus:outline-none focus:ring-2 focus:ring-pldt-red/20 focus:border-pldt-red
+                focus:outline-none focus:ring-2 focus:ring-pldt-red/30 focus:border-pldt-red focus:bg-white
                 disabled:opacity-50 disabled:cursor-not-allowed
                 transition-all duration-200
-                max-h-32 overflow-y-auto"
+                max-h-32 overflow-y-auto shadow-lg hover:shadow-xl hover:border-gray-300"
             />
           </div>
           <button
             onClick={handleSubmit}
             disabled={!input.trim() || disabled}
-            className="flex items-center justify-center h-10 w-10 rounded-full
-              bg-pldt-red text-white
-              hover:bg-pldt-red-dark
-              disabled:bg-gray-200 disabled:text-gray-400
+            className="relative flex items-center justify-center h-12 w-12 rounded-full
+              bg-gradient-to-br from-pldt-red via-[#C8002A] to-pldt-red-dark text-white
+              hover:from-pldt-red-dark hover:via-pldt-red hover:to-pldt-red-dark
+              disabled:bg-gray-200 disabled:text-gray-400 disabled:from-gray-200 disabled:to-gray-200
               disabled:cursor-not-allowed
               transition-all duration-200
-              hover:scale-105 active:scale-95
-              shadow-sm hover:shadow-md flex-shrink-0
-              focus:outline-none focus:ring-2 focus:ring-pldt-red/30"
+              hover:scale-110 active:scale-95
+              shadow-xl hover:shadow-2xl hover:shadow-pldt-red/40 flex-shrink-0
+              focus:outline-none focus:ring-2 focus:ring-pldt-red/50 border-2 border-pldt-red/20"
             aria-label="Send message"
           >
-            <Send className="w-4 h-4" strokeWidth={2.5} />
+            <Send className="w-5 h-5" strokeWidth={2.5} />
+            {/* Shine effect */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent rounded-full pointer-events-none" />
           </button>
           {voiceEnabled && onVoiceMessage && (
             <VoiceRecorder
@@ -131,10 +135,10 @@ export default function ChatInput({
           )}
         </div>
 
-        <p className="mt-2 text-xs text-gray-400 text-center">
-          Press <kbd className="px-1 py-0.5 rounded bg-gray-100 border border-gray-200 font-mono text-[10px]">Enter</kbd> to send
+        <p className="mt-3 text-xs text-gray-400 text-center font-medium">
+          Press <kbd className="px-2 py-1 rounded-lg bg-gray-100 border-2 border-gray-200 font-mono text-[10px] shadow-sm">Enter</kbd> to send
           {' '}•{' '}
-          <kbd className="px-1 py-0.5 rounded bg-gray-100 border border-gray-200 font-mono text-[10px]">Shift+Enter</kbd> for new line
+          <kbd className="px-2 py-1 rounded-lg bg-gray-100 border-2 border-gray-200 font-mono text-[10px] shadow-sm">Shift+Enter</kbd> for new line
           {voiceEnabled ? ' • Hold mic to speak' : ''}
         </p>
       </div>

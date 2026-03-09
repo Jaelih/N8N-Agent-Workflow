@@ -9,7 +9,6 @@ import ChatInput from './ChatInput'
 import TypingIndicator from './TypingIndicator'
 import { api } from '../lib/api'
 import { stopCurrentAudio } from '../lib/audioManager'
-import pldtLogo from '../../img/PLDT-Logo.png'
 import pldtIcon from '../../img/PLDT-Icon.png'
 
 interface ChatContainerProps {
@@ -149,88 +148,109 @@ export default function ChatContainer({ onMenuClick, sidebarOpen }: ChatContaine
     <div className="flex flex-col h-full bg-white">
 
       {/* ── Header ────────────────────────────────────────────── */}
-      <header className="bg-gradient-to-r from-[#B8002A] to-[#D50032] px-4 pt-4 pb-3 flex-shrink-0">
-        <div className="flex items-center justify-between">
-          {/* Left: hamburger (mobile) + bot avatar + name + logo */}
-          <div className="flex items-center gap-3">
-            {/* Hamburger — mobile only */}
-            <button
-              onClick={onMenuClick}
-              className="lg:hidden flex-shrink-0 p-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
-              aria-label="Open menu"
-            >
-              <Menu className="w-5 h-5 text-white" />
-            </button>
-            {/* Desktop re-open button — only when sidebar is closed */}
-            {!sidebarOpen && (
+      <header className="relative bg-gradient-to-br from-[#B8002A] via-[#C8002A] to-[#D50032] px-6 py-5 flex-shrink-0 shadow-xl overflow-hidden">
+        {/* Subtle pattern overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+        
+        <div className="relative">
+          {/* Main header content */}
+          <div className="flex items-center justify-between max-w-4xl mx-auto mb-5">
+            {/* Left: hamburger (mobile/desktop toggle) */}
+            <div className="flex items-center gap-2 w-16">
+              {/* Hamburger — mobile only */}
               <button
                 onClick={onMenuClick}
-                className="hidden lg:flex flex-shrink-0 p-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
-                aria-label="Open sidebar"
-                title="Open sidebar"
+                className="lg:hidden flex-shrink-0 p-2 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105 active:scale-95"
+                aria-label="Open menu"
               >
-                <PanelLeftOpen className="w-4 h-4 text-white" />
+                <Menu className="w-5 h-5 text-white" />
               </button>
-            )}
-            {/* Bot avatar using PLDT icon */}
-            <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center
-              flex-shrink-0 shadow-md p-1.5 border border-white/20">
-              <img src={pldtIcon} alt="Gabby" className="w-full h-full object-contain" />
+              {/* Desktop re-open button — only when sidebar is closed */}
+              {!sidebarOpen && (
+                <button
+                  onClick={onMenuClick}
+                  className="hidden lg:flex flex-shrink-0 p-2 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105 active:scale-95"
+                  aria-label="Open sidebar"
+                  title="Open sidebar"
+                >
+                  <PanelLeftOpen className="w-5 h-5 text-white" />
+                </button>
+              )}
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                {/* PLDT logo in header */}
-                <img src={pldtLogo} alt="PLDT" className="h-4 object-contain brightness-0 invert" />
-                <span className="text-white font-semibold text-sm leading-none">Gabby</span>
-                <span className="bg-white/20 text-white text-[9px] font-bold px-1.5 py-0.5
-                  rounded-full tracking-wide">
-                  AI
-                </span>
+
+            {/* Center: Bot avatar + name (perfectly centered) */}
+            <div className="flex items-center gap-4 absolute left-1/2 transform -translate-x-1/2">
+              {/* Premium bot avatar - clean design */}
+              <div className="relative flex-shrink-0">
+                <div className="relative w-12 h-12 rounded-full bg-white flex items-center justify-center
+                  shadow-lg p-2.5">
+                  <img src={pldtIcon} alt="PLDT Gabby AI" className="w-full h-full object-contain" />
+                </div>
               </div>
-              <p className="text-white/70 text-[11px] mt-0.5">Customer Support Assistant</p>
+              <div className="hidden sm:block">
+                <div className="flex items-center gap-2 mb-1">
+                  <h1 className="text-white font-bold text-lg leading-none tracking-tight">Gabby AI</h1>
+                  <span className="bg-white/20 backdrop-blur-sm border border-white/20 text-white text-[10px] font-bold px-2 py-0.5
+                    rounded-md tracking-wide">
+                    BETA
+                  </span>
+                </div>
+                <p className="text-white/80 text-sm font-medium leading-none">Customer Support Assistant</p>
+              </div>
+            </div>
+
+            {/* Right: online status with clean design */}
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-full border border-white/10">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
+              </span>
+              <span className="text-white font-semibold text-xs hidden sm:inline">Online</span>
             </div>
           </div>
 
-          {/* Right: online status */}
-          <div className="flex items-center gap-1.5">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
-            </span>
-            <span className="text-white/90 font-semibold text-xs">Online</span>
+          {/* Clean trust bar with 8px spacing system */}
+          <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-md rounded-2xl px-5 py-3 flex items-center justify-between gap-4 border border-white/10">
+            <div className="flex items-center gap-3">
+              <div className="bg-white/15 p-2 rounded-lg">
+                <Clock className="w-4 h-4 text-white flex-shrink-0" />
+              </div>
+              <div>
+                <p className="text-white font-semibold text-sm leading-tight">
+                  Replies in <span className="font-bold">under 30 seconds</span>
+                </p>
+                <p className="text-white/70 text-xs mt-1 leading-none">No hold time • Instant support</p>
+              </div>
+            </div>
+            <div className="bg-white/15 px-3 py-1.5 rounded-full">
+              <span className="text-white font-bold text-xs tracking-wide">FREE 24/7</span>
+            </div>
           </div>
-        </div>
-
-        {/* Speed + trust bar */}
-        <div className="mt-3 bg-white/10 rounded-lg px-3 py-1.5 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Clock className="w-3 h-3 text-white/70 flex-shrink-0" />
-            <span className="text-white/80 text-[11px]">Replies in under <strong className="text-white">30 seconds</strong> · No hold time</span>
-          </div>
-          <span className="text-white/50 text-[10px] font-bold uppercase tracking-wide flex-shrink-0">Free</span>
         </div>
       </header>
 
       {/* ── Messages Area ───────────────────────────────────────── */}
-      <div
-        ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto bg-gray-50"
-      >
-        {messages.length === 0 ? (
-          /* Empty / onboarding state */
-          <div className="px-4 py-5">
-            <WelcomeCard onSuggestionClick={handleSendMessage} />
-          </div>
-        ) : (
-          /* Active conversation */
-          <div className="px-4 py-4 space-y-3">
-            {messages.map((message) => (
-              <MessageBubble key={message.id} message={message} />
-            ))}
-            {isTyping && <TypingIndicator />}
-            <div ref={messagesEndRef} />
-          </div>
-        )}
+      <div className="flex-1 bg-gradient-to-br from-gray-50 via-white to-gray-50/50 overflow-hidden flex justify-center">
+        <div
+          ref={messagesContainerRef}
+          className="flex-1 overflow-y-auto max-w-4xl"
+        >
+          {messages.length === 0 ? (
+            /* Empty / onboarding state */
+            <div className="px-4 py-6">
+              <WelcomeCard onSuggestionClick={handleSendMessage} />
+            </div>
+          ) : (
+            /* Active conversation - centered with max width */
+            <div className="px-4 sm:px-6 py-6 space-y-4">
+              {messages.map((message) => (
+                <MessageBubble key={message.id} message={message} />
+              ))}
+              {isTyping && <TypingIndicator />}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── Input Area ──────────────────────────────────────────── */}
@@ -262,80 +282,92 @@ function WelcomeCard({ onSuggestionClick }: WelcomeCardProps) {
   ]
 
   return (
-    <div className="animate-fade-in space-y-3">
+    <div className="animate-fade-in space-y-5">
 
       {/* ── Onboarding / intro bubble ────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-9 h-9 rounded-full bg-white border border-gray-200
-            flex items-center justify-center flex-shrink-0 shadow-sm p-1.5">
-            <img src={pldtIcon} alt="Gabby" className="w-full h-full object-contain" />
-          </div>
-          <div>
-            <p className="font-semibold text-sm text-gray-900">Gabby · PLDT AI Assistant</p>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute h-full w-full rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-500" />
-              </span>
-              <span className="text-[11px] text-green-600 font-medium">Online · Replies instantly</span>
+      <div className="relative bg-white rounded-3xl border-2 border-gray-200 shadow-xl p-6 overflow-hidden">
+        {/* Decorative background gradient */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-pldt-red/10 to-transparent rounded-full blur-3xl" />
+        
+        <div className="relative">
+          <div className="flex items-center gap-3.5 mb-4">
+            {/* Enhanced avatar with glow */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-pldt-red/20 rounded-full blur-lg animate-pulse-subtle" />
+              <div className="relative w-12 h-12 rounded-full bg-white border-2 border-gray-100
+                flex items-center justify-center flex-shrink-0 shadow-xl p-2.5">
+                <img src={pldtIcon} alt="Gabby AI" className="w-full h-full object-contain" />
+              </div>
+            </div>
+            <div>
+              <p className="font-extrabold text-base text-gray-900">Gabby AI Assistant</p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute h-full w-full rounded-full bg-green-400 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500 shadow-lg shadow-green-500/50" />
+                </span>
+                <span className="text-xs text-green-600 font-bold">Online · Replies instantly</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="bg-gray-50 rounded-xl p-3.5 border border-gray-100">
-          <p className="text-sm text-gray-700 leading-relaxed">
-            Hi! I'm <strong>Gabby</strong>, your personal PLDT assistant.
-            I can help you <strong>instantly</strong> with:
-          </p>
-          <ul className="mt-2.5 space-y-1.5">
-            {[
-              'Billing questions and payment inquiries',
-              'Internet connection and technical issues',
-              'Service outages in your area',
-              'Finding the best PLDT plan for you',
-            ].map((item) => (
-              <li key={item} className="flex items-center gap-2 text-xs text-gray-600">
-                <span className="w-1.5 h-1.5 rounded-full bg-pldt-red flex-shrink-0" />
-                {item}
-              </li>
-            ))}
-          </ul>
-          <p className="text-xs text-gray-400 mt-3">
-            No waiting. No hold music. Just ask below. ↓
-          </p>
+          <div className="bg-gradient-to-br from-gray-50 via-white to-gray-100/30 rounded-2xl p-5 border-2 border-gray-100 shadow-inner">
+            <p className="text-sm text-gray-700 leading-relaxed font-medium">
+              Hi! I'm <strong className="text-pldt-red">Gabby</strong>, your personal PLDT assistant.
+              I can help you <strong className="text-pldt-red">instantly</strong> with:
+            </p>
+            <ul className="mt-3.5 space-y-2.5">
+              {[
+                'Billing questions and payment inquiries',
+                'Internet connection and technical issues',
+                'Service outages in your area',
+                'Finding the best PLDT plan for you',
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-3 text-xs text-gray-600 font-medium">
+                  <span className="w-2 h-2 rounded-full bg-gradient-to-r from-pldt-red to-pldt-red-dark flex-shrink-0 shadow-sm" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <p className="text-xs text-gray-400 mt-4 font-semibold">
+              No waiting. No hold music. Just ask below. ↓
+            </p>
+          </div>
         </div>
       </div>
 
       {/* ── Quick action grid ────────────────────────────────── */}
       <div>
-        <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2.5 px-0.5">
+        <p className="text-[11px] font-extrabold text-gray-400 uppercase tracking-widest mb-3.5 px-1">
           Quick Actions
         </p>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-3">
           {suggestions.map(({ Icon, label }) => {
             const isFiber = label.toLowerCase().includes('fiber')
             return (
               <button
                 key={label}
                 onClick={() => onSuggestionClick(label)}
-                className={`flex items-start gap-2.5 px-3.5 py-3 rounded-xl text-left
-                  active:scale-[0.97] transition-all duration-150 group
+                className={`relative flex items-start gap-3 px-4 py-4 rounded-2xl text-left
+                  active:scale-[0.97] transition-all duration-200 group overflow-hidden
                   ${isFiber
-                    ? 'bg-gradient-to-r from-[#C8002A] to-[#9A0020] border-0 hover:opacity-90'
-                    : 'border border-gray-200 bg-white hover:border-pldt-red hover:bg-red-50'
+                    ? 'bg-gradient-to-br from-[#C8002A] via-[#B8002A] to-[#9A0020] border-0 hover:opacity-90 shadow-xl hover:shadow-2xl'
+                    : 'border-2 border-gray-200 bg-white hover:border-pldt-red hover:bg-gradient-to-br hover:from-red-50 hover:to-white shadow-lg hover:shadow-xl'
                   }`}
               >
-                <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors
-                  ${isFiber ? 'bg-white/20' : 'bg-gray-100 group-hover:bg-red-100'}`}>
-                  <Icon className={`w-3.5 h-3.5 transition-colors
+                {/* Decorative shine effect */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${isFiber ? 'from-white/10' : 'from-white'} to-transparent pointer-events-none`} />
+                
+                <div className={`relative w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-200
+                  ${isFiber ? 'bg-white/20 backdrop-blur-sm group-hover:bg-white/30' : 'bg-gradient-to-br from-gray-100 to-gray-50 group-hover:from-red-100 group-hover:to-red-50'}`}>
+                  <Icon className={`w-4 h-4 transition-colors
                     ${isFiber ? 'text-white' : 'text-gray-500 group-hover:text-pldt-red'}`} />
                 </div>
-                <span className={`text-xs font-semibold leading-snug transition-colors
-                  ${isFiber ? 'text-white font-bold' : 'text-gray-700 group-hover:text-pldt-red'}`}>
+                <span className={`relative text-xs font-bold leading-snug transition-colors pt-1
+                  ${isFiber ? 'text-white' : 'text-gray-700 group-hover:text-pldt-red'}`}>
                   {label}
                 </span>
-                {isFiber && <span className="ml-auto text-white/60 text-xs self-center">→</span>}
+                {isFiber && <span className="ml-auto text-white/70 text-sm self-center font-bold">→</span>}
               </button>
             )
           })}
