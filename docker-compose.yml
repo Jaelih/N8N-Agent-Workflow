@@ -10,6 +10,7 @@ services:
       N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
       N8N_BLOCK_FILE_ACCESS_TO_N8N_FILES: "false"
       N8N_TRUSTPROXY: "true"
+      N8N_PROXY_HOPS: "1"
       EDITOR_BASE_URL: ${NGROK_URL}
       WEBHOOK_URL: ${NGROK_URL}
     volumes:
@@ -23,21 +24,12 @@ services:
     container_name: pldt_backend
     ports:
       - "8000:8000"
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OPENAI_API_BASE=${OPENAI_API_BASE}
-      - OPENAI_MODEL=${OPENAI_MODEL}
-      - GOOGLE_TTS_API_KEY=${GOOGLE_TTS_API_KEY}
-      - N8N_BILLING_WEBHOOK=${N8N_BILLING_WEBHOOK}
-      - N8N_CUSTOMER_WEBHOOK=${N8N_CUSTOMER_WEBHOOK}
-      - N8N_TICKET_WEBHOOK=${N8N_TICKET_WEBHOOK}
-      - N8N_NETWORK_WEBHOOK=${N8N_NETWORK_WEBHOOK}
-      - N8N_KNOWLEDGE_WEBHOOK=${N8N_KNOWLEDGE_WEBHOOK}
-      - N8N_API_KEY=${N8N_API_KEY}
+    env_file:
+      - .env
     volumes:
       - ./backend:/app
       - backend_db:/app/db
-      - backend_audio:/app/audio    # ← add this
+      - backend_audio:/app/audio
     restart: unless-stopped
     depends_on:
       - n8n

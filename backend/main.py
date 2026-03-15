@@ -45,10 +45,10 @@ async def voice_chat(
     print(f"Customer [{session_id}]: {user_text}")
 
     # Step 2: Get chat history
-    history = get_history(session_id)
+    # history = get_history(session_id)
 
     # Step 3: Run LangChain Agent
-    agent_response = run_agent(user_text, history)
+    agent_response = run_agent(user_text, session_id)
     print(f"Gabby [{session_id}]: {agent_response}")
 
     # Step 4: Save conversation
@@ -72,9 +72,9 @@ async def text_chat(body: dict):
     user_input = body.get("message", "")
     session_id = body.get("session_id", "default")
 
-    history = get_history(session_id)
+    # history = get_history(session_id)
 
-    response = run_agent(user_input, history)
+    response = run_agent(user_input, session_id)
 
     save_message(session_id, "user", user_input)
     save_message(session_id, "assistant", response)
