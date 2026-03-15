@@ -239,7 +239,7 @@
     },
     {
       "parameters": {
-        "content": "# Billing",
+        "content": "# Billing!!!!!\n",
         "height": 448,
         "width": 784,
         "color": 3
@@ -356,8 +356,9 @@
       "parameters": {
         "promptType": "define",
         "text": "={{ $json.body.User_Request }}",
+        "hasOutputParser": true,
         "options": {
-          "systemMessage": "# ROLE\nYou are a helpful network agent for a Telecommunications company responsible for assisting customers about the the network status in their area.\n\n# TASK\nYour task is to provide information asked by the customer and clarify any confusions without violating any rules and restrictions.\n\n# RESTRICTIONS\n- You are strictly a support agent for tickets. Any other types of requests should be respectfully denied.\n\n# RESPONSE FORMAT\nYour responses, if no errors are encountered, should follow JSON format- only providing the requested information while omitting unnecessary words.\nex. {\"customer_id\": 1001, \"status\": \"Closed\"}\n\n# ERROR HANDLING\nIf you cannot retrieve the customer's desired information politely request for a clarification or tell the reason why you cannot retrieve the information (ex. the information does not exist). \n "
+          "systemMessage": "# ROLE\nYou are a helpful network agent for a Telecommunications company responsible for assisting customers about the the network status in their area.\n\n# TASK\nYour task is to provide information asked by the customer and clarify any confusions without violating any rules and restrictions.\n\n## If no data record exists in the user's specified location:\n- double check if the specified location is a location inside one of the cities with an outage.\n- if not, then there is no outage in the user's specified location.\n\n# RESTRICTIONS\n- You are strictly a support agent for network status. Any other types of requests should be respectfully denied.\n "
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -454,7 +455,7 @@
     },
     {
       "parameters": {
-        "model": "qwen/qwen3-8b",
+        "model": "qwen/qwen3.5-flash-02-23",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
@@ -493,7 +494,7 @@
         "promptType": "define",
         "text": "={{ $json.body.User_Request }}",
         "options": {
-          "systemMessage": "You are a helpful agent that knows about the following topics:\n- LOS red light\n- Slow Internet Speed\n- Billing Payment Channels\n\nif the user asks for any of these information, you can access the tool to retrieve the information."
+          "systemMessage": "You are a detail-oriented agent responsible for answering the questions of your customer.\n\nYou have access to a tool that contains information on how to address their concerns. You must use this tool anytime the customer asks about anything.\n\nThe tool contians information about:\n- blinking red light\n- Slow Internet Speed\n- Billing Payment Channels\n\n"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -701,7 +702,7 @@
     {
       "parameters": {
         "mode": "retrieve-as-tool",
-        "toolDescription": "use this tool if the customer asks about:\n- LOS Red Light\n- Slow Internet Speed\n- Billing Payment Channels",
+        "toolDescription": "use this tool if the customer mentions any of the following:\n- blinking Red Light\n- Slow Internet Speed\n- Billing Payment Channels\n\nthis tool will contain informatio  on how to address their concern.",
         "tableName": {
           "__rl": true,
           "value": "rpc/match_documents",
@@ -941,6 +942,467 @@
       ],
       "id": "3ef6da78-1c88-4e43-a35c-ac4bb33c109b",
       "name": "Respond to Ticket Webhook"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "1",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2144,
+        2064
+      ],
+      "id": "d2ce434f-2e1e-4241-94f0-c2c7d400d073",
+      "name": "Simple Memory5"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3-coder",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2032,
+        2048
+      ],
+      "id": "fb190023-e0d7-4bb2-90e8-12274c1aaaba",
+      "name": "OpenRouter Chat Model5",
+      "credentials": {
+        "openRouterApi": {
+          "id": "TBhVPmR7gGBVePdU",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Create Ticket",
+        "height": 448,
+        "width": 784,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        1776
+      ],
+      "id": "fd1b1030-1619-48e8-a56c-353d07723a9b",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "1",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2144,
+        2528
+      ],
+      "id": "82460c20-cd52-4745-b08e-e8084338b0e2",
+      "name": "Simple Memory6"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3-coder",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2032,
+        2512
+      ],
+      "id": "8cf0421f-8541-4427-814c-1da0c86a26e4",
+      "name": "OpenRouter Chat Model6",
+      "credentials": {
+        "openRouterApi": {
+          "id": "TBhVPmR7gGBVePdU",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.User_Request }}",
+        "options": {
+          "systemMessage": "# ROLE\nYou are a detail-oriented support agent for a Telecommunications company responsible for providing customers about their post paid balance information.\n\n# TASK\nYour task is to provide information asked by the customer and clarify any confusions without violating any rules and restrictions.\n \n# NOTE\nThere is no need to verify the customer's identity.\nYou must always return the full contents of the tool response."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2272,
+        2320
+      ],
+      "id": "f8b773cd-3504-492f-8364-8965e8c8eaf2",
+      "name": "Billing Agent2"
+    },
+    {
+      "parameters": {
+        "content": "# Post Paid Balance",
+        "height": 448,
+        "width": 784,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        2240
+      ],
+      "id": "92a59fb9-b36f-4cb0-9858-6e7783312dd0",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this tool to create an HTTP GET request for a customer's information",
+        "url": "https://pldtqa.pldt.com.ph/mobility/amdocs/api/autocheckbalance/0459701501",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Pldt-Auth-Token",
+              "value": "AH5PMt52GhW33gv1zdwuum2X591vTyD637WmFwVZupTpXR4ZG8tKB6QoFGGj65AaYEKpfKrT9nGYeKxtKadp7GM"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {},
+        "optimizeResponse": true
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        2416,
+        2528
+      ],
+      "id": "f0fd27ab-a7d8-447e-9399-f8624bdcfd1a",
+      "name": "GET Post-Paid Balance"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this tool to create an HTTP POST request to submit a support ticket from the customer.",
+        "method": "POST",
+        "url": "https://pldtqa.pldt.com.ph/mobility/amdocs/api/customers/tickets",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Pldt-Auth-Token",
+              "value": "AH5PMt52GhW33gv1zdwuum2X591vTyD637WmFwVZupTpXR4ZG8tKB6QoFGGj65AaYEKpfKrT9nGYeKxtKadp7GM"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "description",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', `This field should describe what problem the customer is experiencing.`, 'string') }}"
+            },
+            {
+              "name": "priority",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', `ranges from 1-5 where one is the highest priority and five is the lowest.`, 'string') }}"
+            },
+            {
+              "name": "telephone_number",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters2_Value', `the contact number of the customer.`, 'string') }}"
+            },
+            {
+              "name": "reported_by",
+              "value": "CHATBOT H-ESWUP"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        2416,
+        2064
+      ],
+      "id": "0c4b7ae1-3dd0-4904-b52b-909b2a9e9498",
+      "name": "POST Ticket"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2592,
+        2320
+      ],
+      "id": "64b9acf1-c21f-4670-9fb4-adacea57431a",
+      "name": "Respond to Post Paid Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2576,
+        1856
+      ],
+      "id": "67c04fd7-c113-4ba6-93e1-eff6d680f0b7",
+      "name": "Respond to Create Ticket Webhook"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "f9b58b54-50ae-455a-a69d-97c0db3794e3",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        2064,
+        1856
+      ],
+      "id": "1fe96ac1-90bf-4040-9bca-69a9b81118ed",
+      "name": "Webhook1",
+      "webhookId": "f9b58b54-50ae-455a-a69d-97c0db3794e3"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "1",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2144,
+        2992
+      ],
+      "id": "3efcc8ce-a6c1-474b-8479-3c89d8c94170",
+      "name": "Simple Memory7"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3-coder",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2032,
+        2976
+      ],
+      "id": "2952f5f5-86f2-4cd5-98e0-bf43f37b21a4",
+      "name": "OpenRouter Chat Model7",
+      "credentials": {
+        "openRouterApi": {
+          "id": "TBhVPmR7gGBVePdU",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Calendar\n",
+        "height": 448,
+        "width": 784,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        2704
+      ],
+      "id": "4150567a-e3cd-441e-8af0-4f2d21dc0b8c",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ee77326d-b1c2-436d-8fa5-a29a44fd1494",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        2096,
+        2320
+      ],
+      "id": "9a89b445-d8d9-4ae3-b5a7-5cf57dfcff4b",
+      "name": "Webhook",
+      "webhookId": "ee77326d-b1c2-436d-8fa5-a29a44fd1494"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "3e7c2823-d046-499d-82c7-b592adeb1d29",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        2096,
+        2784
+      ],
+      "id": "21484a7f-f982-4ecb-b93e-efbbf73d53b4",
+      "name": "Webhook2",
+      "webhookId": "3e7c2823-d046-499d-82c7-b592adeb1d29"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2592,
+        2784
+      ],
+      "id": "80b97ef5-4888-4abe-ac23-ababb12bc357",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "89084f56faefdd85a764193118e07b47694ee5d5ebbecb3cdfb5bc3ab09e5f5c@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "N8N"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', `the start date and time of the consultation set by the user. if no date and time is mentioned, return an error message.`, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', `this field must be 15 minutes after the start date and time.`, 'string') }}",
+        "useDefaultReminders": false,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        2416,
+        3008
+      ],
+      "id": "7ce546dc-a38b-4fc9-8e0a-17def0c860dc",
+      "name": "Create an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "TtmPtgsQUTEEibXY",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "get the current time",
+        "calendar": {
+          "__rl": true,
+          "value": "89084f56faefdd85a764193118e07b47694ee5d5ebbecb3cdfb5bc3ab09e5f5c@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "N8N"
+        },
+        "end": "={{ $now }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        2192,
+        3136
+      ],
+      "id": "cc82653b-b45d-4f33-beb7-e35f2cf3d73f",
+      "name": "Create an event in Google Calendar1",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "TtmPtgsQUTEEibXY",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.User_Request }}",
+        "options": {
+          "systemMessage": "=# ROLE\nYou are a detail-oriented support agent for a Telecommunications company responsible for setting appointments between customers and PLDT representatives.\n\n# TASK\nYour task is to set appointments without violating any rules and restrictions.\n\n# RULES/RESTRICTIONS\n- appointment start date cannot be set before {{ $now.toISO() }}\n- appointment date should only last 15 minutes\n- you are striclty an agent for setting appointments. any other requests should be respectfully denied.\n "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2272,
+        2784
+      ],
+      "id": "68fef334-aa1e-40ca-bede-63c9282de658",
+      "name": "Calendar Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.User_Request }}",
+        "options": {
+          "systemMessage": "# ROLE\nYou are a detail-oriented support agent for a Telecommunications company responsible for creating support tickets for your customers.\n\n# TASK\nYour task is to create a ticket with all the correct information and credentials without violating any rules and restrictions.\n\n# RESTRICTIONS\nYou are strictly a support agent for support ticket creation. Any other types of requests should be respectfully denied.\n "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2272,
+        1856
+      ],
+      "id": "5a27aa4c-8a4f-45db-acaf-b1185ab19190",
+      "name": "Create Ticket Agent"
+    },
+    {
+      "parameters": {
+        "model": "=qwen/qwen3-embedding-0.6b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        3280,
+        4032
+      ],
+      "id": "abd8524b-ecc4-4869-aa66-f7cdf31d43c1",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "S8lWQufTG2TfZELh",
+          "name": "OpenAi account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -1276,6 +1738,171 @@
           }
         ]
       ]
+    },
+    "Simple Memory5": {
+      "ai_memory": [
+        [
+          {
+            "node": "Create Ticket Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Create Ticket Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory6": {
+      "ai_memory": [
+        [
+          {
+            "node": "Billing Agent2",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Billing Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Billing Agent2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Post Paid Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Post-Paid Balance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Billing Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST Ticket": {
+      "ai_tool": [
+        [
+          {
+            "node": "Create Ticket Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Create Ticket Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory7": {
+      "ai_memory": [
+        [
+          {
+            "node": "Calendar Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model7": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Calendar Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Billing Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook2": {
+      "main": [
+        [
+          {
+            "node": "Calendar Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Ticket Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Create Ticket Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -1284,7 +1911,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "cf9f231d-14d5-447d-8f3d-ed2e7a7a479b",
+  "versionId": "e16fe7a0-5368-4310-8901-d227ce89968f",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6706564d2fe2eb9a69ad5152cc9c7ff9ced876386855f98d0502def674fe6a0d"
