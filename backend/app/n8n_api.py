@@ -6,13 +6,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-BILLING_WEBHOOK = os.getenv("N8N_BILLING_WEBHOOK")
-CUSTOMER_WEBHOOK = os.getenv("N8N_CUSTOMER_WEBHOOK")
 TICKET_WEBHOOK = os.getenv("N8N_TICKET_WEBHOOK")
 NETWORK_WEBHOOK = os.getenv("N8N_NETWORK_WEBHOOK")
 KNOWLEDGE_WEBHOOK = os.getenv("N8N_KNOWLEDGE_WEBHOOK")
-POSTPAIDBALANCE_WEBHOOK = os.getenv("N8N_POSTPAIDBALANCE_WEBHOOK")
+CUSTOMER_INFO_WEBHOOK = os.getenv("N8N_CUSTOMER_INFO_WEBHOOK")
 CALENDAR_WEBHOOK = os.getenv("N8N_CALENDAR_WEBHOOK")
+
 N8N_API_KEY = os.getenv("N8N_API_KEY")
 X_PLDT_AUTH_TOKEN = os.getenv("X_PLDT_AUTH_TOKEN", "")
 
@@ -39,28 +38,20 @@ def call_webhook(url: str, data: dict, headers: dict = HEADERS) -> dict:
         return {"error": str(e)}
 
 def get_customer_info(user_request: str) -> dict:
-    r = call_webhook(POSTPAIDBALANCE_WEBHOOK, {
+    print(f"get_customer_info called with: {user_request}")
+    r = call_webhook(CUSTOMER_INFO_WEBHOOK, {
         "User_Request": user_request
     })
-    print(f"get_customer_info: {r}")
     return r
 
-# def get_billing(account_number: str) -> dict:
-#     return call_webhook(BILLING_WEBHOOK, {
-#         "User_Request": f"Get billing info for account number {account_number}"
-#     })
-
-# def get_customer(customer_id: str) -> dict:
-#     return call_webhook(CUSTOMER_WEBHOOK, {
-#         "User_Request": f"Get customer info for ID {customer_id}"
-#     })
-
-def submit_ticket(account_number: str, concern: str, contact_number: str) -> dict:
+def ticket_agent(user_request: str) -> dict:
+    print(f"ticket_agent called with: {user_request}")
     return call_webhook(TICKET_WEBHOOK, {
-        "User_Request": f"Submit a support ticket for account {account_number}. Concern: {concern}. Contact number: {contact_number}"
+        "User_Request": user_request
     })
 
 def check_network_status(area: str) -> dict:
+    print(f"check_network_status called with: {area}")
     r = call_webhook(NETWORK_WEBHOOK, {
         "User_Request": f"Check network status in {area}"
     })
@@ -68,17 +59,19 @@ def check_network_status(area: str) -> dict:
     return r
 
 def get_knowledge_base(question: str) -> dict:
+    print(f"get_knowledge_base called with: {question}")
     r = call_webhook(KNOWLEDGE_WEBHOOK, {
         "User_Request": question
     })
     print(f"get_knowledge_base: {r}")
     return r
 
-def set_meeting_date(meeting_date: str) -> dict:
+def calendar_agent(meeting_date: str, reason: str) -> dict:
+    print(f"calendar_agent called with: {meeting_date}")
     r = call_webhook(CALENDAR_WEBHOOK, {
-        "User_Request": f"Set meeting date to {meeting_date}"
+        "User_Request": f"Set meeting date to {meeting_date}\n reason: {reason}"
     })
-    print(f"set_meeting_date: {r}")
+    print(f"calendar_agent: {r}")
     return r
 
 def get_current_time() -> dict:

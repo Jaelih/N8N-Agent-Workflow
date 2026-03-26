@@ -13,9 +13,9 @@ from app.n8n_api import (
     check_network_status,
     get_knowledge_base,
     get_customer_info,
-    set_meeting_date,
+    calendar_agent,
     get_current_time,
-    submit_ticket
+    ticket_agent
 )
 
 load_dotenv()
@@ -35,22 +35,15 @@ llm = ChatOpenAI(
 # ── Tools ──────────────────────────────────────────────
 
 @tool
-def get_customer_info_tool(user_request: str) -> dict:
+def call_customer_info_agent(user_request: str) -> dict:
     """
-    The webhook returns customer account data with three main sections:
+    Call this agent for retrieving customer account information using their service number.
+
+    This agent is capable providing the following information:
     1. `balanceProfile` - current and latest balance with statement info
     2. `serviceProfiles` - an array of active services (voice, DSL, etc.) with plan, credit, and status details
     3. `customerProfile` - full customer identity, billing, consent, loyalty, and verification data
-
-    Key fields to prioritize:
-    - `accountStatus`, `balanceDue`, `dueDate` → for billing queries
-    - `serviceStatus`, `serviceType`, `packageName` → for service queries
-    - `openDispute`, `openConnectSO`, `openTreatmentSO` → for issue/order tracking
-    - `dpaConsent`, `promo*`, `loyalty*` → for communication preference checks
-    - `mobileStatus`, `emailStatus` → for verification status
-
-    There is no need to confirm the customer's identity with them before calling this tool. Just call it with the user's request and use the returned data to guide your responses and next steps.
-    """
+    """ 
     return get_customer_info(user_request)
 
 # @tool
@@ -105,24 +98,32 @@ def search_knowledge_base_tool(question: str) -> dict:
     return get_knowledge_base(question)
 
 @tool
-def set_meeting_date_tool(start_meeting_date: str) -> dict:
+def call_calendar_agent(start_meeting_date: str, reason: str) -> dict:
     """
-    Schedules a meeting with a PLDT representative on the date explicitly specified by the user.
-    Use this when the customer wants to set up an appointment.
+    Call this agent when the customer wants to set up an appointment or meeting.
+    This agent is responsible for scheduling a meeting with a PLDT representative on the date explicitly specified by the user.
 
-    There must be a clear start date and time, except for the year- let the tool handle that.
-    The appintment cannot be scheduled for a past date. Always confirm the date with the customer before calling this tool.
+    # NOTES
+    - There must be a clear start date and time, except for the year- let the agent handle that.
+    - The appointment cannot be scheduled for a past date. Always confirm the date with the customer before calling this tool.
+    - Only include a reason for the meeting if the customer explicitly states it. Do not assume or make up a reason. Otherwise just say "No reason specified".
     """
     current_year = get_current_time()["date"].split(", ")[1]
-    return set_meeting_date(f"{start_meeting_date} {current_year}")
+    return calendar_agent(f"{start_meeting_date}", reason)
 
 @tool
-def submit_ticket_tool(account_number: str, concern: str, contact_number: str) -> dict:
+def call_ticket_agent(user_request: str) -> dict:
     """
-    Submits a support ticket for unresolved customer issues.
-    Always get Account Number and contact number before calling this.
+    Call this agent for creating and retrieving support tickets.
+
+    # Creating Tickets:
+    - Creating tickets is the final step for unresolved issues that require human intervention.
+
+    # Retrieving Tickets:
+    - To retrieve a ticket, a service number is required.
+    - If there are no ticket details returned, there is no need to escalate the situation. Simply say that the customer has no open tickets.
     """
-    return submit_ticket(account_number, concern, contact_number)
+    return ticket_agent(user_request)
 # ── System Prompt ──────────────────────────────────────
 
 system_prompt = """
@@ -131,11 +132,11 @@ You are Gabby, a PLDT customer service voice assistant. Your goal is to be helpf
 
 # CRITICAL: DYNAMIC LANGUAGE ADAPTATION
 You must match the language the user is speaking.
-Stay specifically in either MODE A or MODE B based on the user's language.
 Only change modes when the user explicitly switches languages.
+Locations or cities mentioned without an explicit language switch should not trigger a mode change. In that case, respond in the same language as your previous response.
 
 ## MODE A: IF USER SPEAKS ENGLISH
-- Respond in clear, professional, but warm Philippine English.
+- Respond in clear, professional, but warm English.
 - No "po", no "Ma'am/Sir", no Tagalog words.
 - Sound like a friendly and competent call center agent.
 
@@ -145,11 +146,6 @@ Only change modes when the user explicitly switches languages.
 - Never say "Ma'am/Sir" — use "kayo" instead.
 - Sound warm and genuinely caring, like a real Filipino customer service rep.
 - Use natural expressions like "Sige", "Ay nako", "Sandali lang", "Check ko na yan", "Wag po kayong mag-alala."
-- Example: "Pasensya na po sa abala. Taga-saan po ba kayo para ma-check ko yung signal sa inyong area?"
-
-### notes: 
-- if the user only mentions a city or location without explicitly speaking in any language, respond in the same language as your previous response.
-- DO not verify the user's identity unless a tool response contains information that requires you to ask the user for specific details (e.g. account number, customer ID, contact number) to proceed with a request. In that case, ask for the specific information needed in a natural way.
 
 # STRICT AUDIO AND FORMATTING RULES
 - NO MARKDOWN: Never use bullet points, asterisks, or numbered lists.
@@ -161,11 +157,6 @@ Only change modes when the user explicitly switches languages.
 
 # STANDARD PROCEDURES
 1. Outages: Ask for the specific city or location before checking network status.
-2. Billing: Use the `get_customer_info` tool to get the necessary information.
-2. Service: Use the `get_customer_info` tool to get the necessary information.
-2. Issue/Order Tracking: Use the `get_customer_info` tool to get the necessary information.
-2. Communication Preferences: Use the `get_customer_info` tool to get the necessary information.
-2. Verification Status: Use the `get_customer_info` tool to get the necessary information.
 """
 
 # ── Agent ──────────────────────────────────────────────
@@ -173,9 +164,9 @@ Only change modes when the user explicitly switches languages.
 tools = [
     check_network_status_tool,
     search_knowledge_base_tool, # RAG
-    get_customer_info_tool,
-    set_meeting_date_tool,
-    submit_ticket_tool
+    call_customer_info_agent,
+    call_calendar_agent,
+    call_ticket_agent
 ]
 
 agent = create_agent(
