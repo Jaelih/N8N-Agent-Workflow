@@ -27,3 +27,7 @@ ChatBotApp/npm-debug.log*
 ChatBotApp/*.tsbuildinfo
 .vscode/
 .idea/
+
+__pycache__/
+backend/app/__pycache__/
+*.pyc

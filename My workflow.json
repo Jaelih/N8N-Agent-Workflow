@@ -4,314 +4,14 @@
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "1",
+        "sessionKey": "7",
         "contextWindowLength": 10
       },
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
         2944,
-        2064
-      ],
-      "id": "0d86f478-591d-4e0f-a1f7-aec1d10e2609",
-      "name": "Simple Memory"
-    },
-    {
-      "parameters": {
-        "model": "qwen/qwen3-coder",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
-      "typeVersion": 1,
-      "position": [
-        2832,
         2048
-      ],
-      "id": "dc8cd120-359d-48ac-9b9a-c665e94bd165",
-      "name": "OpenRouter Chat Model",
-      "credentials": {
-        "openRouterApi": {
-          "id": "TBhVPmR7gGBVePdU",
-          "name": "OpenRouter account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "content": "## run before doing anything else\n- delete all nodes\n- import 'My workflow.json'\n\nin terminal:\n- docker compose down\n- docker compose up\n",
-        "height": 224,
-        "color": 4
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        3584,
-        1776
-      ],
-      "id": "37f6156e-1505-4c87-85f9-79babc0f6007",
-      "name": "Sticky Note"
-    },
-    {
-      "parameters": {
-        "content": "human voice -> orchestrator/customer support agent -> specific tool",
-        "width": 256
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        3840,
-        1776
-      ],
-      "id": "31f00f87-86f9-4af8-ab4a-aa3936d2aedf",
-      "name": "Sticky Note1"
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "={{ $json.body.User_Request }}",
-        "options": {
-          "systemMessage": "# ROLE\nYou are a detail-oriented support agent for a Telecommunications company responsible for providing customers about their billing information.\n\n# TASK\nYour task is to provide information asked by the customer and clarify any confusions without violating any rules and restrictions.\n\n# RESTRICTIONS\nYou are strictly a support agent for billings information. Any other types of requests should be respectfully denied. Only include information asked for by the customer in your response.\n\n# RESPONSE FORMAT\nYour responses, if no errors are encountered, should follow JSON format- only providing the requested information while omitting unnecessary words.\nex. {\"bill_id\": \"INV-2024-001\", \"customer_id\": 1001, \"amount_due\": 1699}\n\n# ERROR HANDLING\nIf you cannot retrieve the customer's information based on the provided customer ID, mention that there are no users with that customer ID and then politely request for a clarification on the customer ID.\n "
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
-      "position": [
-        3072,
-        1856
-      ],
-      "id": "3d6abc2b-e532-444a-a3da-4a1ff907bfff",
-      "name": "Billing Agent"
-    },
-    {
-      "parameters": {
-        "descriptionType": "manual",
-        "toolDescription": "Use this tool to retrieve customer billing information, including billing cycle, amount due, due date, payment status, and outstanding balance, from the 'billing' table using a specific customer ID.",
-        "operation": "getAll",
-        "tableId": "billing",
-        "matchType": "allFilters",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "customer_id",
-              "condition": "eq",
-              "keyValue": "={{ $fromAI('customer_id', 'the customer\\'s ID as provided in the chat. Do not guess values. If you do not know what to input, ask for it respectfully.') }}"
-            }
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.supabaseTool",
-      "typeVersion": 1,
-      "position": [
-        3104,
-        2048
-      ],
-      "id": "704c683d-5194-4b82-bf30-94f8370692d5",
-      "name": "get billings",
-      "credentials": {
-        "supabaseApi": {
-          "id": "YknCFx3chWNwiQ3P",
-          "name": "Supabase account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "descriptionType": "manual",
-        "toolDescription": "get billing information in supabase using the customer's 'customer_id'",
-        "operation": "update",
-        "tableId": "billing",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "bill_id",
-              "condition": "eq",
-              "keyValue": "={{ $fromAI('bill_id', `The bill ID linked with the customer (ex. INV-2024-001).`, 'string') }}"
-            }
-          ]
-        },
-        "fieldsUi": {
-          "fieldValues": [
-            {}
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.supabaseTool",
-      "typeVersion": 1,
-      "position": [
-        3328,
-        2080
-      ],
-      "id": "4f680d6d-11f0-47c5-a4ee-9f2dab9c4cfc",
-      "name": "delete bilings",
-      "credentials": {
-        "supabaseApi": {
-          "id": "YknCFx3chWNwiQ3P",
-          "name": "Supabase account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "sessionIdType": "customKey",
-        "sessionKey": "1",
-        "contextWindowLength": 10
-      },
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.3,
-      "position": [
-        2944,
-        2512
-      ],
-      "id": "714f8536-d873-4451-81ef-ced449011cc6",
-      "name": "Simple Memory1"
-    },
-    {
-      "parameters": {
-        "model": "qwen/qwen3-coder",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
-      "typeVersion": 1,
-      "position": [
-        2832,
-        2496
-      ],
-      "id": "184b44a6-24f6-4b3d-b712-a0303eecad20",
-      "name": "OpenRouter Chat Model1",
-      "credentials": {
-        "openRouterApi": {
-          "id": "TBhVPmR7gGBVePdU",
-          "name": "OpenRouter account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "={{ $json.body.User_Request }}",
-        "options": {
-          "systemMessage": "# ROLE\nYou are a detail-oriented support agent for a Telecommunications company responsible for providing customers about their general information.\n\n# TASK\nYour task is to provide information asked by the customer and clarify any confusions without violating any rules and restrictions.\n\n# RESTRICTIONS\n- You are strictly a support agent for customer information. Any other types of requests should be respectfully denied.\n- Only include information asked for by the customer in your response.\n- You can only call a tool once you know their ID and the information they want to get.\n\n# RESPONSE FORMAT\nYour responses, if no errors are encountered, should follow JSON format- only providing the requested information while omitting unnecessary words.\nex. {\"customer_id\": 1001, \"plan_type\": \"Fiber Unli 1699\"}\n\n# ERROR HANDLING\nIf you cannot retrieve the customer's information based on the provided customer ID, mention that a user with that customer ID does not exist and then politely request for a clarification on the customer ID.\n "
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
-      "position": [
-        3072,
-        2304
-      ],
-      "id": "d992ba88-3fa3-4b29-a7f8-f37e86809695",
-      "name": "Customer Agent"
-    },
-    {
-      "parameters": {
-        "sessionIdType": "customKey",
-        "sessionKey": "1",
-        "contextWindowLength": 10
-      },
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.3,
-      "position": [
-        2944,
-        2976
-      ],
-      "id": "a25174f4-3e9b-41da-a1ab-eac2a32749d4",
-      "name": "Simple Memory2"
-    },
-    {
-      "parameters": {
-        "model": "qwen/qwen3-coder",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
-      "typeVersion": 1,
-      "position": [
-        2832,
-        2960
-      ],
-      "id": "ebbbf63d-0510-44b7-acd6-7fe3f7340187",
-      "name": "OpenRouter Chat Model2",
-      "credentials": {
-        "openRouterApi": {
-          "id": "TBhVPmR7gGBVePdU",
-          "name": "OpenRouter account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "content": "# Billing!!!!!\n",
-        "height": 448,
-        "width": 784,
-        "color": 3
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        2784,
-        1776
-      ],
-      "id": "f8238c94-1976-47e4-8dff-7460f6baa363",
-      "name": "Sticky Note2"
-    },
-    {
-      "parameters": {
-        "content": "# Customer",
-        "height": 432,
-        "width": 784,
-        "color": 2
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        2784,
-        2240
-      ],
-      "id": "e824a37f-f207-4470-9c97-f6e38146b567",
-      "name": "Sticky Note3"
-    },
-    {
-      "parameters": {
-        "content": "# Ticket",
-        "height": 448,
-        "width": 784
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        2784,
-        2688
-      ],
-      "id": "946fd709-250d-42e6-9b36-ac52e24557d1",
-      "name": "Sticky Note4"
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "={{ $json.body.User_Request }}",
-        "options": {
-          "systemMessage": "# ROLE\nYou are a helpful support agent for a Telecommunications company responsible for assisting customers about their current tickets' information.\n\n# TASK\nYour task is to provide information asked by the customer and clarify any confusions without violating any rules and restrictions.\n\n# RESTRICTIONS\n- You are strictly a support agent for tickets. Any other types of requests should be respectfully denied.\n- You should not provide any information unless you have confirmed their customer ID\n\n# RESPONSE FORMAT\nYour responses, if no errors are encountered, should follow JSON format- only providing the requested information while omitting unnecessary words.\nex. {\"customer_id\": 1001, \"status\": \"Closed\"}\n\n# ERROR HANDLING\nIf you cannot retrieve the customer's information based on the provided customer ID, mention that a user with that customer ID does not exist and then politely request for a clarification on the customer ID.\n "
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
-      "position": [
-        3072,
-        2768
-      ],
-      "id": "e73a447f-f30f-49d9-b22a-3a87602d3845",
-      "name": "Ticket Agent"
-    },
-    {
-      "parameters": {
-        "sessionIdType": "customKey",
-        "sessionKey": "1",
-        "contextWindowLength": 10
-      },
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.3,
-      "position": [
-        2944,
-        3424
       ],
       "id": "84af0358-7ef2-4e46-98ea-d12eb3686f49",
       "name": "Simple Memory3"
@@ -325,7 +25,7 @@
       "typeVersion": 1,
       "position": [
         2832,
-        3408
+        2032
       ],
       "id": "501cb424-b06a-40e3-8592-bdc127fdea78",
       "name": "OpenRouter Chat Model3",
@@ -341,13 +41,13 @@
         "content": "# Network",
         "height": 448,
         "width": 784,
-        "color": 4
+        "color": 6
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
         2784,
-        3152
+        1776
       ],
       "id": "73100d84-4d86-4782-8a03-e0eebd02f6c1",
       "name": "Sticky Note5"
@@ -365,61 +65,10 @@
       "typeVersion": 3.1,
       "position": [
         3072,
-        3216
+        1840
       ],
       "id": "90cc4a09-3a47-4256-9cf5-41db801df501",
       "name": "Network Agent"
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "3202ed58-9850-4cd8-b4e0-fe0c57066032",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        2896,
-        1856
-      ],
-      "id": "c7a2a686-9252-406b-89d8-9d37ad559121",
-      "name": "Billing Webhook",
-      "webhookId": "3202ed58-9850-4cd8-b4e0-fe0c57066032"
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "0200b068-4cd5-4263-9445-42fb9914b64f",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        2896,
-        2304
-      ],
-      "id": "5fd989d1-c2c5-475e-b773-783460ec5083",
-      "name": "Customer Webhook",
-      "webhookId": "0200b068-4cd5-4263-9445-42fb9914b64f"
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "ba439e6f-6812-454b-a64e-9bd9a54e3cdb",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        2896,
-        2768
-      ],
-      "id": "2169dd05-a498-45c5-9150-c7fa08e9321c",
-      "name": "Ticket Webhook",
-      "webhookId": "ba439e6f-6812-454b-a64e-9bd9a54e3cdb"
     },
     {
       "parameters": {
@@ -432,7 +81,7 @@
       "typeVersion": 2.1,
       "position": [
         2896,
-        3216
+        1840
       ],
       "id": "c0bec474-06f1-482b-a4fd-d8fe313a77b1",
       "name": "Network Webhook",
@@ -441,14 +90,14 @@
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "1",
+        "sessionKey": "8",
         "contextWindowLength": 10
       },
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
         2944,
-        3888
+        2512
       ],
       "id": "db2946da-c60e-4464-b4e2-8b40c2ab0444",
       "name": "Simple Memory4"
@@ -462,7 +111,7 @@
       "typeVersion": 1,
       "position": [
         2832,
-        3872
+        2496
       ],
       "id": "b4c4bc44-8cdb-42d7-a718-28fe939d8dbc",
       "name": "OpenRouter Chat Model4",
@@ -478,13 +127,13 @@
         "content": "# General Knowledge",
         "height": 576,
         "width": 784,
-        "color": 5
+        "color": 6
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
         2784,
-        3616
+        2240
       ],
       "id": "12f25393-035d-4e10-b5d0-972ba283448a",
       "name": "Sticky Note6"
@@ -501,7 +150,7 @@
       "typeVersion": 3.1,
       "position": [
         3072,
-        3680
+        2304
       ],
       "id": "104ed05a-bac9-490c-9c90-938892410ee0",
       "name": "General Knowledge Agent"
@@ -517,187 +166,11 @@
       "typeVersion": 2.1,
       "position": [
         2896,
-        3680
+        2304
       ],
       "id": "dae6ad0f-1bfe-4082-86ba-d527b1b7663f",
       "name": "General Knowledge Webhook",
       "webhookId": "41828f4a-0ee2-405c-becf-f7d9fea19a56"
-    },
-    {
-      "parameters": {
-        "descriptionType": "manual",
-        "toolDescription": "Use this tool to retrieve customer information, including plan type, account status, modem/router serial number, etc. from the 'customers' table using a specific customer ID.",
-        "operation": "getAll",
-        "tableId": "customers",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "customer_id",
-              "condition": "eq",
-              "keyValue": "={{ $fromAI('customer_id', 'the customer\\'s ID as provided in the chat. Do not guess values. If you do not know what to input, ask for it respectfully.') }}"
-            }
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.supabaseTool",
-      "typeVersion": 1,
-      "position": [
-        3104,
-        2496
-      ],
-      "id": "8e4aff47-698e-4adc-81a1-1fb86b05cabd",
-      "name": "get customers",
-      "credentials": {
-        "supabaseApi": {
-          "id": "YknCFx3chWNwiQ3P",
-          "name": "Supabase account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "descriptionType": "manual",
-        "toolDescription": "get customer account information using the customer's 'customer_id'",
-        "operation": "update",
-        "tableId": "customers",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "customer_id",
-              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions0_Value', `The numeric ID of the customer (e.g., 1001). Do not provide strings or UUIDs.`, 'string') }}"
-            }
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.supabaseTool",
-      "typeVersion": 1,
-      "position": [
-        3216,
-        2512
-      ],
-      "id": "68fef103-22b1-422f-9988-cace83e6fcc2",
-      "name": "update customers",
-      "credentials": {
-        "supabaseApi": {
-          "id": "YknCFx3chWNwiQ3P",
-          "name": "Supabase account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "descriptionType": "manual",
-        "toolDescription": "get customer account information using the customer's 'customer_id'",
-        "operation": "delete",
-        "tableId": "customers",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "customer_id",
-              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions0_Value', `The numeric ID of the customer (e.g., 1001). Do not provide strings or UUIDs.`, 'string') }}"
-            }
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.supabaseTool",
-      "typeVersion": 1,
-      "position": [
-        3328,
-        2528
-      ],
-      "id": "78f6764b-3327-450e-9d4f-2dc5ebfed838",
-      "name": "delete customers",
-      "credentials": {
-        "supabaseApi": {
-          "id": "YknCFx3chWNwiQ3P",
-          "name": "Supabase account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "descriptionType": "manual",
-        "toolDescription": "Use this tool to retrieve ticket information, including issue category, ticket status, date opened, and last agent note from the 'tickets' table using a specific customer ID.",
-        "operation": "getAll",
-        "tableId": "tickets",
-        "limit": 10,
-        "matchType": "allFilters",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "customer_id",
-              "condition": "eq",
-              "keyValue": "={{ $fromAI('customer_id', 'the customer\\'s ID as provided in the chat. Do not guess values. If you do not know what to input, ask for it respectfully.') }}"
-            }
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.supabaseTool",
-      "typeVersion": 1,
-      "position": [
-        3104,
-        2960
-      ],
-      "id": "96da3914-9417-4934-8b94-f09a62cc1b85",
-      "name": "read tickets",
-      "credentials": {
-        "supabaseApi": {
-          "id": "YknCFx3chWNwiQ3P",
-          "name": "Supabase account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "descriptionType": "manual",
-        "toolDescription": "Retrieve ticket information from the database using either a ticket_id or a customer_id. \n\nUse this tool when the user asks about ticket status, existing support requests, issue progress, or support history. \n\nThis tool returns real-time ticket data from the system.\n",
-        "operation": "delete",
-        "tableId": "tickets",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "ticket_id",
-              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions0_Field_Value', ``, 'string') }}"
-            }
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.supabaseTool",
-      "typeVersion": 1,
-      "position": [
-        3328,
-        2992
-      ],
-      "id": "1f011091-228c-4193-bac1-720434ffa396",
-      "name": "delete tickets",
-      "credentials": {
-        "supabaseApi": {
-          "id": "YknCFx3chWNwiQ3P",
-          "name": "Supabase account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "descriptionType": "manual",
-        "toolDescription": "get network status from a location using the information provided by the user like their location id, city, and area code.",
-        "operation": "delete",
-        "tableId": "network_status"
-      },
-      "type": "n8n-nodes-base.supabaseTool",
-      "typeVersion": 1,
-      "position": [
-        3344,
-        3440
-      ],
-      "id": "66ae38d9-eb03-458c-8655-8cf587cfe5a2",
-      "name": "delete network status",
-      "credentials": {
-        "supabaseApi": {
-          "id": "YknCFx3chWNwiQ3P",
-          "name": "Supabase account"
-        }
-      }
     },
     {
       "parameters": {
@@ -709,14 +182,14 @@
           "mode": "list",
           "cachedResultName": "rpc/match_documents"
         },
-        "topK": 40,
+        "topK": 5,
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
         3136,
-        3888
+        2512
       ],
       "id": "5e419f25-4b97-4a14-abc4-6d07ca7f8fbc",
       "name": "knowledge base",
@@ -734,8 +207,8 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
       "typeVersion": 1,
       "position": [
-        3136,
-        4032
+        3088,
+        3088
       ],
       "id": "3a99ae0b-b0fd-4d18-b009-7f7a5f9c6a89",
       "name": "Embeddings Ollama",
@@ -754,33 +227,7 @@
       "typeVersion": 1.5,
       "position": [
         3376,
-        1856
-      ],
-      "id": "73a9fd3e-8edd-4805-b053-48098b90a9dc",
-      "name": "Respond to Billing Webhook"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.5,
-      "position": [
-        3376,
-        2304
-      ],
-      "id": "20ebe5a4-3ff7-4e3d-a657-8bb66cfe8271",
-      "name": "Respond to Customer Webhook"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.5,
-      "position": [
-        3376,
-        3216
+        1840
       ],
       "id": "3cc27866-1482-4bca-99b2-db6a60de440e",
       "name": "Respond to Network Webhook"
@@ -793,109 +240,10 @@
       "typeVersion": 1.5,
       "position": [
         3376,
-        3680
+        2304
       ],
       "id": "5b55e9c6-1160-4f1e-b002-91f2f03c888b",
       "name": "Respond to Knowledge Webhook"
-    },
-    {
-      "parameters": {
-        "descriptionType": "manual",
-        "toolDescription": "Use this tool to update the customer's billing amount from the 'billing' table using a specific customer ID.\n\nThis tool should only be used when the payment has been confirmed.\n\nOnce the payment has been confirmed, the paid amount should be subtracted from 'amount_due'.",
-        "operation": "update",
-        "tableId": "billing",
-        "matchType": "allFilters",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "customer_id",
-              "condition": "eq",
-              "keyValue": "=  {{ $fromAI('customer_id', 'the customer\\'s id as provided in the chat. Do not guess values. If you do not know what to input, ask for it respectfully.') }}"
-            },
-            {
-              "keyName": "bill_id",
-              "condition": "eq",
-              "keyValue": "={{ $fromAI('bill_id', 'the customer\\'s bill id as discussed in the chat. Do not guess values. If you\\'re not sure what to input, ask for it respectfully.') }}"
-            }
-          ]
-        },
-        "fieldsUi": {
-          "fieldValues": [
-            {
-              "fieldId": "amount_due",
-              "fieldValue": "={{ $fromAI('paid_amount', 'The amount paid by the customer as well as the value to subtract from ') }}"
-            }
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.supabaseTool",
-      "typeVersion": 1,
-      "position": [
-        3216,
-        2064
-      ],
-      "id": "a08330a6-b0dc-4059-a79d-8c52359c9dbc",
-      "name": "update amount due",
-      "credentials": {
-        "supabaseApi": {
-          "id": "YknCFx3chWNwiQ3P",
-          "name": "Supabase account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "descriptionType": "manual",
-        "toolDescription": "Retrieve ticket information from the database using either a ticket_id or a customer_id. \n\nUse this tool when the user asks about ticket status, existing support requests, issue progress, or support history. \n\nThis tool returns real-time ticket data from the system.\n",
-        "operation": "update",
-        "tableId": "tickets",
-        "matchType": "allFilters",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "ticket_id",
-              "condition": "eq",
-              "keyValue": "={{ $fromAI('ticket_id', 'the ticket ID of the current conversation\\'s topic. Do not guess values. If you do not know what to input, ask for it respectfully.') }}"
-            }
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.supabaseTool",
-      "typeVersion": 1,
-      "position": [
-        3216,
-        2976
-      ],
-      "id": "ca3f188b-1814-4a0a-a241-812e84dd3c05",
-      "name": "update ticket status",
-      "credentials": {
-        "supabaseApi": {
-          "id": "YknCFx3chWNwiQ3P",
-          "name": "Supabase account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "descriptionType": "manual",
-        "toolDescription": "get network status from a location using the information provided by the user like their location id, city, and area code.",
-        "operation": "update",
-        "tableId": "network_status"
-      },
-      "type": "n8n-nodes-base.supabaseTool",
-      "typeVersion": 1,
-      "position": [
-        3216,
-        3424
-      ],
-      "id": "0ee8359e-689d-47fd-8dbe-439b4a3af621",
-      "name": "update network status",
-      "credentials": {
-        "supabaseApi": {
-          "id": "YknCFx3chWNwiQ3P",
-          "name": "Supabase account"
-        }
-      }
     },
     {
       "parameters": {
@@ -919,7 +267,7 @@
       "typeVersion": 1,
       "position": [
         3088,
-        3408
+        2032
       ],
       "id": "fd3de593-b130-4219-b5ce-fed77d1835e1",
       "name": "Read Network",
@@ -929,19 +277,6 @@
           "name": "Supabase account"
         }
       }
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.5,
-      "position": [
-        3376,
-        2768
-      ],
-      "id": "3ef6da78-1c88-4e43-a35c-ac4bb33c109b",
-      "name": "Respond to Ticket Webhook"
     },
     {
       "parameters": {
@@ -980,10 +315,10 @@
     },
     {
       "parameters": {
-        "content": "# Create Ticket",
+        "content": "# Ticket [POST ticket error response]",
         "height": 448,
         "width": 784,
-        "color": 3
+        "color": 5
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -997,7 +332,7 @@
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "1",
+        "sessionKey": "2",
         "contextWindowLength": 10
       },
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
@@ -1034,7 +369,7 @@
         "promptType": "define",
         "text": "={{ $json.body.User_Request }}",
         "options": {
-          "systemMessage": "# ROLE\nYou are a detail-oriented support agent for a Telecommunications company responsible for providing customers about their post paid balance information.\n\n# TASK\nYour task is to provide information asked by the customer and clarify any confusions without violating any rules and restrictions.\n \n# NOTE\nThere is no need to verify the customer's identity.\nYou must always return the full contents of the tool response."
+          "systemMessage": "# ROLE\nYou are a detail-oriented support agent for a Telecommunications company responsible for providing customers about the details of their profile , balances billings, and services as well as service operation statuses.\n\n# TASK\nYour task is to provide information asked by the customer and clarify any confusions without violating any rules and restrictions.\n\n\n"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -1048,10 +383,10 @@
     },
     {
       "parameters": {
-        "content": "# Post Paid Balance",
-        "height": 448,
+        "content": "# Customer Info (post paid bal)",
+        "height": 432,
         "width": 784,
-        "color": 3
+        "color": 5
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -1061,110 +396,6 @@
       ],
       "id": "92a59fb9-b36f-4cb0-9858-6e7783312dd0",
       "name": "Sticky Note8"
-    },
-    {
-      "parameters": {
-        "toolDescription": "Use this tool to create an HTTP GET request for a customer's information",
-        "url": "https://pldtqa.pldt.com.ph/mobility/amdocs/api/autocheckbalance/0459701501",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Accept",
-              "value": "application/json"
-            },
-            {
-              "name": "X-Pldt-Auth-Token",
-              "value": "AH5PMt52GhW33gv1zdwuum2X591vTyD637WmFwVZupTpXR4ZG8tKB6QoFGGj65AaYEKpfKrT9nGYeKxtKadp7GM"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "options": {},
-        "optimizeResponse": true
-      },
-      "type": "n8n-nodes-base.httpRequestTool",
-      "typeVersion": 4.4,
-      "position": [
-        2416,
-        2528
-      ],
-      "id": "f0fd27ab-a7d8-447e-9399-f8624bdcfd1a",
-      "name": "GET Post-Paid Balance"
-    },
-    {
-      "parameters": {
-        "toolDescription": "Use this tool to create an HTTP POST request to submit a support ticket from the customer.",
-        "method": "POST",
-        "url": "https://pldtqa.pldt.com.ph/mobility/amdocs/api/customers/tickets",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Accept",
-              "value": "application/json"
-            },
-            {
-              "name": "X-Pldt-Auth-Token",
-              "value": "AH5PMt52GhW33gv1zdwuum2X591vTyD637WmFwVZupTpXR4ZG8tKB6QoFGGj65AaYEKpfKrT9nGYeKxtKadp7GM"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "description",
-              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', `This field should describe what problem the customer is experiencing.`, 'string') }}"
-            },
-            {
-              "name": "priority",
-              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', `ranges from 1-5 where one is the highest priority and five is the lowest.`, 'string') }}"
-            },
-            {
-              "name": "telephone_number",
-              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters2_Value', `the contact number of the customer.`, 'string') }}"
-            },
-            {
-              "name": "reported_by",
-              "value": "CHATBOT H-ESWUP"
-            }
-          ]
-        },
-        "options": {
-          "redirect": {
-            "redirect": {}
-          }
-        }
-      },
-      "type": "n8n-nodes-base.httpRequestTool",
-      "typeVersion": 4.4,
-      "position": [
-        2416,
-        2064
-      ],
-      "id": "0c4b7ae1-3dd0-4904-b52b-909b2a9e9498",
-      "name": "POST Ticket"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.5,
-      "position": [
-        2592,
-        2320
-      ],
-      "id": "64b9acf1-c21f-4670-9fb4-adacea57431a",
-      "name": "Respond to Post Paid Webhook"
     },
     {
       "parameters": {
@@ -1198,21 +429,6 @@
     },
     {
       "parameters": {
-        "sessionIdType": "customKey",
-        "sessionKey": "1",
-        "contextWindowLength": 10
-      },
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.3,
-      "position": [
-        2144,
-        2992
-      ],
-      "id": "3efcc8ce-a6c1-474b-8479-3c89d8c94170",
-      "name": "Simple Memory7"
-    },
-    {
-      "parameters": {
         "model": "qwen/qwen3-coder",
         "options": {}
       },
@@ -1220,7 +436,7 @@
       "typeVersion": 1,
       "position": [
         2032,
-        2976
+        2960
       ],
       "id": "2952f5f5-86f2-4cd5-98e0-bf43f37b21a4",
       "name": "OpenRouter Chat Model7",
@@ -1236,13 +452,13 @@
         "content": "# Calendar\n",
         "height": 448,
         "width": 784,
-        "color": 3
+        "color": 5
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
         1984,
-        2704
+        2688
       ],
       "id": "4150567a-e3cd-441e-8af0-4f2d21dc0b8c",
       "name": "Sticky Note9"
@@ -1275,7 +491,7 @@
       "typeVersion": 2.1,
       "position": [
         2096,
-        2784
+        2768
       ],
       "id": "21484a7f-f982-4ecb-b93e-efbbf73d53b4",
       "name": "Webhook2",
@@ -1289,13 +505,15 @@
       "typeVersion": 1.5,
       "position": [
         2592,
-        2784
+        2768
       ],
       "id": "80b97ef5-4888-4abe-ac23-ababb12bc357",
       "name": "Respond to Webhook"
     },
     {
       "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Create an event in Google Calendar",
         "calendar": {
           "__rl": true,
           "value": "89084f56faefdd85a764193118e07b47694ee5d5ebbecb3cdfb5bc3ab09e5f5c@group.calendar.google.com",
@@ -1305,13 +523,15 @@
         "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', `the start date and time of the consultation set by the user. if no date and time is mentioned, return an error message.`, 'string') }}",
         "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', `this field must be 15 minutes after the start date and time.`, 'string') }}",
         "useDefaultReminders": false,
-        "additionalFields": {}
+        "additionalFields": {
+          "summary": "Customer Meeting"
+        }
       },
       "type": "n8n-nodes-base.googleCalendarTool",
       "typeVersion": 1.3,
       "position": [
         2416,
-        3008
+        2992
       ],
       "id": "7ce546dc-a38b-4fc9-8e0a-17def0c860dc",
       "name": "Create an event in Google Calendar",
@@ -1324,55 +544,75 @@
     },
     {
       "parameters": {
-        "descriptionType": "manual",
-        "toolDescription": "get the current time",
-        "calendar": {
-          "__rl": true,
-          "value": "89084f56faefdd85a764193118e07b47694ee5d5ebbecb3cdfb5bc3ab09e5f5c@group.calendar.google.com",
-          "mode": "list",
-          "cachedResultName": "N8N"
-        },
-        "end": "={{ $now }}",
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.googleCalendarTool",
-      "typeVersion": 1.3,
-      "position": [
-        2192,
-        3136
-      ],
-      "id": "cc82653b-b45d-4f33-beb7-e35f2cf3d73f",
-      "name": "Create an event in Google Calendar1",
-      "credentials": {
-        "googleCalendarOAuth2Api": {
-          "id": "TtmPtgsQUTEEibXY",
-          "name": "Google Calendar account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "promptType": "define",
         "text": "={{ $json.body.User_Request }}",
         "options": {
-          "systemMessage": "=# ROLE\nYou are a detail-oriented support agent for a Telecommunications company responsible for setting appointments between customers and PLDT representatives.\n\n# TASK\nYour task is to set appointments without violating any rules and restrictions.\n\n# RULES/RESTRICTIONS\n- appointment start date cannot be set before {{ $now.toISO() }}\n- appointment date should only last 15 minutes\n- you are striclty an agent for setting appointments. any other requests should be respectfully denied.\n "
+          "systemMessage": "=# ROLE\nYou are a detail-oriented support agent for a Telecommunications company responsible for setting appointments between customers and PLDT representatives.\n\n# TASK\nYour task is to set appointments without violating any rules and restrictions.\n\n# RULES/RESTRICTIONS\n- appointment start date cannot be set before {{ $now.format('cccc, MMMM d, yyyy') }}\n- appointment date should only last 15 minutes\n- you are striclty an agent for setting appointments. any other requests should be respectfully denied.\n "
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
         2272,
-        2784
+        2768
       ],
       "id": "68fef334-aa1e-40ca-bede-63c9282de658",
       "name": "Calendar Agent"
     },
     {
       "parameters": {
+        "toolDescription": "Use this tool only when the user asks about their past balances, payments, or unbilled payments.\n\nThis tool returns the following fields:\n- accountCategory\n- currentBalance\n- currentCharges\n- customerAccount\n- customerName\n- customerBday\n- customerId\n- dueDate\n- invoiceNumber\n- lastBillDate\n- lastPayment\n- paymentDate\n- previousBalance\n- totalUnbilled",
+        "url": "=https://pldtqa.pldt.com.ph/mobility/askpldt-api/customers/accounts/{{$fromAI('accountNumber', `The account number extracted from the conversation.`, 'string')}}/{{$fromAI('telephoneNumber', `The telephone number extracted from the conversation.`, 'string')}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        2480,
+        2512
+      ],
+      "id": "85a3e5c7-f508-4690-a91c-6626e1247a5f",
+      "name": "GET Balance Inquiry"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this tool to get the service operation status of a service.\n\nthis tool returns the following fields:\n- cancelReason\n- claritySoId\n- completeDate\n- facilityReserve\n- awaitPayment\n- soStatus\n- serviceType\n- spiel",
+        "url": "=https://pldtqa.pldt.com.ph/mobility/askpldt-api/customers/accounts/soStatus/{{$fromAI('accountNumber', `The account number extracted from the conversation.`, 'string')}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        2624,
+        2512
+      ],
+      "id": "6a8096ec-9059-4f55-987b-3194a3ad5ab9",
+      "name": "GET Service Operation Status"
+    },
+    {
+      "parameters": {
         "promptType": "define",
         "text": "={{ $json.body.User_Request }}",
         "options": {
-          "systemMessage": "# ROLE\nYou are a detail-oriented support agent for a Telecommunications company responsible for creating support tickets for your customers.\n\n# TASK\nYour task is to create a ticket with all the correct information and credentials without violating any rules and restrictions.\n\n# RESTRICTIONS\nYou are strictly a support agent for support ticket creation. Any other types of requests should be respectfully denied.\n "
+          "systemMessage": "# ROLE\nYou are a detail-oriented support agent for a Telecommunications company responsible for creating and retrieving support tickets for your customers.\n\n# RESTRICTIONS\nYou are strictly a support agent for support ticket creation and retrieval. Any other types of requests should be respectfully denied.\nYour response should be as concise as possible without leaving out any details to minimize token usage.\n \n# IMPORTANT NOTES\nWhen retrieving a ticket:\n- if there are no ticket details returned, there is no need to escalate the situation. Simply say that the customer has no existing tickets."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -1382,141 +622,248 @@
         1856
       ],
       "id": "5a27aa4c-8a4f-45db-acaf-b1185ab19190",
-      "name": "Create Ticket Agent"
+      "name": "Ticket Agent1"
     },
     {
       "parameters": {
-        "model": "=qwen/qwen3-embedding-0.6b",
+        "toolDescription": "Use this tool to retrieve ticket information using a service number.\nYou must provide the service number in the 'serviceNumber' parameter.\"\n\nThis tool returns the following fields:\n- promNumber\n- promCreated\n- promWorgName\n- prouProsCode\n- prosDescription\n- serviceId\n- promAcknowledgedby\n- promClearedby\n- promConfirmedby\n- promRelation\n- techId\n- techName\n- spiel\n\nIf the response fields are null, there is no need to escalate the situation and there is no need to clarify the service number. It just means that the customer has no existing tickets.",
+        "url": "=https://pldtqa.pldt.com.ph/mobility/askpldt-api/customers/tickets/byServiceNumber/{{ $fromAI('serviceNumber', `The service number extracted from the conversation.`, 'string') }}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        2512,
+        2064
+      ],
+      "id": "8572a37e-443d-4b70-b308-8a07f29f85cb",
+      "name": "GET Ticket"
+    },
+    {
+      "parameters": {
         "options": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-      "typeVersion": 1.2,
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
       "position": [
-        3280,
-        4032
+        2592,
+        2320
       ],
-      "id": "abd8524b-ecc4-4869-aa66-f7cdf31d43c1",
-      "name": "Embeddings OpenAI",
+      "id": "64b9acf1-c21f-4670-9fb4-adacea57431a",
+      "name": "Respond to Post Paid Webhook"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this tool to create an HTTP POST request to submit a support ticket from the customer.",
+        "method": "POST",
+        "url": "https://pldtqa.pldt.com.ph/mobility/amdocs/api/customers/tickets",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Pldt-Auth-Token",
+              "value": "AH5PMt52GhW33gv1zdwuum2X591vTyD637WmFwVZupTpXR4ZG8tKB6QoFGGj65AaYEKpfKrT9nGYeKxtKadp7GM"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        2352,
+        2064
+      ],
+      "id": "0c4b7ae1-3dd0-4904-b52b-909b2a9e9498",
+      "name": "POST Ticket"
+    },
+    {
+      "parameters": {
+        "url": "=https://pldtqa.pldt.com.ph/mobility/askpldt-api/customers/tickets/byServiceNumber/{{serviceNumber}}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "serviceNumber",
+              "value": "025561266"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1792,
+        1952
+      ],
+      "id": "4591e145-3414-4f54-9632-ccdfd1348396",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this tool to retrieve customer‑account information using a service number.\nYou must provide the service number in the 'serviceNumber' parameter.\n\nThe webhook returns customer account data with three main sections:\n1. `balanceProfile` - current and latest balance with statement info\n2. `serviceProfiles` - an array of active services (voice, DSL, etc.) with plan, credit, and status details\n3. `customerProfile` - full customer identity, billing, consent, loyalty, and verification data",
+        "url": "=https://pldtqa.pldt.com.ph/mobility/amdocs/api/autocheckbalance/{{$fromAI('serviceNumber', `The service number extracted from the conversation.`, 'string')}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Pldt-Auth-Token",
+              "value": "AH5PMt52GhW33gv1zdwuum2X591vTyD637WmFwVZupTpXR4ZG8tKB6QoFGGj65AaYEKpfKrT9nGYeKxtKadp7GM"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {},
+        "optimizeResponse": true
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        2320,
+        2512
+      ],
+      "id": "f0fd27ab-a7d8-447e-9399-f8624bdcfd1a",
+      "name": "GET Customer Info"
+    },
+    {
+      "parameters": {
+        "formTitle": "Upload your data to test RAG",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "data",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        2800,
+        2864
+      ],
+      "id": "8d328ed8-670c-47eb-9cd5-585cd5fe6acb",
+      "name": "Upload your file here",
+      "webhookId": "3b0c065f-091d-4d61-923d-4ae22e20d4e7"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        3328,
+        2864
+      ],
+      "id": "cda91aff-013c-440b-b4f7-951da4f3dc41",
+      "name": "Supabase Vector Store",
       "credentials": {
-        "openAiApi": {
-          "id": "S8lWQufTG2TfZELh",
-          "name": "OpenAi account"
+        "supabaseApi": {
+          "id": "YknCFx3chWNwiQ3P",
+          "name": "Supabase account"
         }
       }
+    },
+    {
+      "parameters": {
+        "operation": "fromJson",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        2992,
+        2864
+      ],
+      "id": "45809541-5b9b-4d3d-a97e-1a57750b7154",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.data.pageContent }}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "metadata",
+                "value": "={{ $json.data.metadata }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        3328,
+        3088
+      ],
+      "id": "cd4e40f0-7254-44e5-bd78-59efeddac73a",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        3168,
+        2864
+      ],
+      "id": "ced4e0c5-4a8e-44c8-8a81-0c57b77aa791",
+      "name": "Split Out"
     }
   ],
   "pinData": {},
   "connections": {
-    "Simple Memory": {
-      "ai_memory": [
-        [
-          {
-            "node": "Billing Agent",
-            "type": "ai_memory",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "OpenRouter Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Billing Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Billing Agent": {
-      "main": [
-        [
-          {
-            "node": "Respond to Billing Webhook",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "get billings": {
-      "ai_tool": [
-        [
-          {
-            "node": "Billing Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Simple Memory1": {
-      "ai_memory": [
-        [
-          {
-            "node": "Customer Agent",
-            "type": "ai_memory",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "OpenRouter Chat Model1": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Customer Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Customer Agent": {
-      "main": [
-        [
-          {
-            "node": "Respond to Customer Webhook",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Simple Memory2": {
-      "ai_memory": [
-        [
-          {
-            "node": "Ticket Agent",
-            "type": "ai_memory",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "OpenRouter Chat Model2": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Ticket Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Ticket Agent": {
-      "main": [
-        [
-          {
-            "node": "Respond to Ticket Webhook",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Simple Memory3": {
       "ai_memory": [
         [
@@ -1544,28 +891,6 @@
         [
           {
             "node": "Respond to Network Webhook",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Billing Webhook": {
-      "main": [
-        [
-          {
-            "node": "Billing Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Customer Webhook": {
-      "main": [
-        [
-          {
-            "node": "Customer Agent",
             "type": "main",
             "index": 0
           }
@@ -1627,53 +952,6 @@
         ]
       ]
     },
-    "delete bilings": {
-      "ai_tool": [
-        []
-      ]
-    },
-    "get customers": {
-      "ai_tool": [
-        [
-          {
-            "node": "Customer Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "update customers": {
-      "ai_tool": [
-        []
-      ]
-    },
-    "delete customers": {
-      "ai_tool": [
-        []
-      ]
-    },
-    "read tickets": {
-      "ai_tool": [
-        [
-          {
-            "node": "Ticket Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "delete tickets": {
-      "ai_tool": [
-        []
-      ]
-    },
-    "delete network status": {
-      "ai_tool": [
-        []
-      ]
-    },
     "knowledge base": {
       "ai_tool": [
         [
@@ -1692,26 +970,10 @@
             "node": "knowledge base",
             "type": "ai_embedding",
             "index": 0
-          }
-        ]
-      ]
-    },
-    "update amount due": {
-      "ai_tool": [
-        []
-      ]
-    },
-    "update ticket status": {
-      "ai_tool": [
-        []
-      ]
-    },
-    "update network status": {
-      "ai_tool": [
-        [
+          },
           {
-            "node": "Network Agent",
-            "type": "ai_tool",
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
             "index": 0
           }
         ]
@@ -1728,22 +990,11 @@
         ]
       ]
     },
-    "Ticket Webhook": {
-      "main": [
-        [
-          {
-            "node": "Ticket Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Simple Memory5": {
       "ai_memory": [
         [
           {
-            "node": "Create Ticket Agent",
+            "node": "Ticket Agent1",
             "type": "ai_memory",
             "index": 0
           }
@@ -1754,7 +1005,7 @@
       "ai_languageModel": [
         [
           {
-            "node": "Create Ticket Agent",
+            "node": "Ticket Agent1",
             "type": "ai_languageModel",
             "index": 0
           }
@@ -1794,45 +1045,12 @@
         ]
       ]
     },
-    "GET Post-Paid Balance": {
-      "ai_tool": [
-        [
-          {
-            "node": "Billing Agent2",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "POST Ticket": {
-      "ai_tool": [
-        [
-          {
-            "node": "Create Ticket Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Webhook1": {
       "main": [
         [
           {
-            "node": "Create Ticket Agent",
+            "node": "Ticket Agent1",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Simple Memory7": {
-      "ai_memory": [
-        [
-          {
-            "node": "Calendar Agent",
-            "type": "ai_memory",
             "index": 0
           }
         ]
@@ -1893,11 +1111,98 @@
         ]
       ]
     },
-    "Create Ticket Agent": {
+    "GET Balance Inquiry": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "GET Service Operation Status": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "Ticket Agent1": {
       "main": [
         [
           {
             "node": "Respond to Create Ticket Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Ticket": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ticket Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST Ticket": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ticket Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Customer Info": {
+      "ai_tool": [
+        [
+          {
+            "node": "Billing Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload your file here": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
             "type": "main",
             "index": 0
           }
@@ -1911,7 +1216,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "e16fe7a0-5368-4310-8901-d227ce89968f",
+  "versionId": "4d09c1b1-b018-499e-a519-485594dc435a",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6706564d2fe2eb9a69ad5152cc9c7ff9ced876386855f98d0502def674fe6a0d"
