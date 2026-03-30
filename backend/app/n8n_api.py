@@ -37,8 +37,8 @@ def call_webhook(url: str, data: dict, headers: dict = HEADERS) -> dict:
     except Exception as e:
         return {"error": str(e)}
 
-def get_customer_info(user_request: str) -> dict:
-    print(f"get_customer_info called with: {user_request}")
+def customer_info_agent(user_request: str) -> dict:
+    print(f"customer_info_agent called with: {user_request}")
     r = call_webhook(CUSTOMER_INFO_WEBHOOK, {
         "User_Request": user_request
     })
@@ -50,26 +50,26 @@ def ticket_agent(user_request: str) -> dict:
         "User_Request": user_request
     })
 
-def check_network_status(area: str) -> dict:
-    print(f"check_network_status called with: {area}")
+def network_agent(area: str) -> dict:
+    print(f"network_agent called with: {area}")
     r = call_webhook(NETWORK_WEBHOOK, {
         "User_Request": f"Check network status in {area}"
     })
-    print(f"check_network_status: {r}")
+    print(f"network_agent: {r}")
     return r
 
-def get_knowledge_base(question: str) -> dict:
-    print(f"get_knowledge_base called with: {question}")
+def knowledge_agent(question: str) -> dict:
+    print(f"knowledge_agent called with: {question}")
     r = call_webhook(KNOWLEDGE_WEBHOOK, {
         "User_Request": question
     })
-    print(f"get_knowledge_base: {r}")
+    print(f"knowledge_agent: {r}")
     return r
 
-def calendar_agent(meeting_date: str, reason: str) -> dict:
-    print(f"calendar_agent called with: {meeting_date}")
+def calendar_agent(month: str, day:str, time:str, reason: str) -> dict:
+    print(f"calendar_agent called with: {month}, {day}, {time}, {reason}")
     r = call_webhook(CALENDAR_WEBHOOK, {
-        "User_Request": f"Set meeting date to {meeting_date}\n reason: {reason}"
+        "User_Request": f"Set meeting date for {month} {day} at {time}\n reason: {reason}"
     })
     print(f"calendar_agent: {r}")
     return r

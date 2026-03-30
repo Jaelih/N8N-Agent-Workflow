@@ -10,9 +10,9 @@ from app.n8n_api import (
     # get_billing,
     # get_customer,
     # submit_ticket,
-    check_network_status,
-    get_knowledge_base,
-    get_customer_info,
+    network_agent,
+    knowledge_agent,
+    customer_info_agent,
     calendar_agent,
     get_current_time,
     ticket_agent
@@ -44,61 +44,34 @@ def call_customer_info_agent(user_request: str) -> dict:
     2. `serviceProfiles` - an array of active services (voice, DSL, etc.) with plan, credit, and status details
     3. `customerProfile` - full customer identity, billing, consent, loyalty, and verification data
     """ 
-    return get_customer_info(user_request)
-
-# @tool
-# def get_billing_status(customer_id: str) -> dict:
-#     """
-#     Retrieves billing status of a PLDT customer by Customer ID.
-#     Always ask the customer for their customer ID before calling this.
-#     """
-#     return get_billing(customer_id)
-
-
-# @tool
-# def get_customer_info(customer_id: str) -> dict:
-#     """
-#     Retrieves customer account information using their customer ID.
-#     Use this to verify customer identity before showing billing info.
-#     """
-#     return get_customer(customer_id)
-
-
-# @tool
-# def submit_support_ticket(customer_id: str, concern: str, contact_number: str) -> dict:
-#     """
-#     Submits a support ticket for unresolved customer issues.
-#     Always get Customer ID and contact number before calling this.
-#     """
-#     return submit_ticket(customer_id, concern, contact_number)
-
+    return customer_info_agent(user_request)
 
 @tool
-def check_network_status_tool(area: str) -> dict:
+def call_network_agent(area: str) -> dict:
     """
-    Checks for active network outages in a given city or area in the Philippines.
+    Call this agent to check for active network outages in a given city or area in the Philippines.
     Call this immediately when customer mentions any area or location.
     If has_outage is True inform the customer there IS an active outage.
     If has_outage is False inform the customer there is NO outage.
     """
-    return check_network_status(area)
+    return network_agent(area)
 
 
 @tool
-def search_knowledge_base_tool(question: str) -> dict:
+def call_knowledge_agent(question: str) -> dict:
     """
-    Searches the PLDT knowledge base for answers to frequently asked questions.
-    Use this tool when the customer mentions:
+    Call this agent to search the PLDT knowledge base for answers to frequently asked questions.
+    Call this agent when the customer mentions:
     - a blinking red light
     - slow internet speed
     - lag
     - billing payment channels
     - where/how to pay bills
     """
-    return get_knowledge_base(question)
+    return knowledge_agent(question)
 
 @tool
-def call_calendar_agent(start_meeting_date: str, reason: str) -> dict:
+def call_calendar_agent(month: str, day: str, time: str, reason: str) -> dict:
     """
     Call this agent when the customer wants to set up an appointment or meeting.
     This agent is responsible for scheduling a meeting with a PLDT representative on the date explicitly specified by the user.
@@ -109,7 +82,7 @@ def call_calendar_agent(start_meeting_date: str, reason: str) -> dict:
     - Only include a reason for the meeting if the customer explicitly states it. Do not assume or make up a reason. Otherwise just say "No reason specified".
     """
     current_year = get_current_time()["date"].split(", ")[1]
-    return calendar_agent(f"{start_meeting_date}", reason)
+    return calendar_agent(month, day, time, reason)
 
 @tool
 def call_ticket_agent(user_request: str) -> dict:
@@ -128,24 +101,15 @@ def call_ticket_agent(user_request: str) -> dict:
 
 system_prompt = """
 # IDENTITY:
-You are Gabby, a PLDT customer service voice assistant. Your goal is to be helpful, concise, and sound like a real human agent in the Philippines.
+You are Gabby, a PLDT customer service voice assistant. Your goal is to be concise, and sound like a real human agent.
+You go straight to the point, and avoid unnecessary explanations.
 
-# CRITICAL: DYNAMIC LANGUAGE ADAPTATION
-You must match the language the user is speaking.
-Only change modes when the user explicitly switches languages.
-Locations or cities mentioned without an explicit language switch should not trigger a mode change. In that case, respond in the same language as your previous response.
-
-## MODE A: IF USER SPEAKS ENGLISH
-- Respond in clear, professional, but warm English.
-- No "po", no "Ma'am/Sir", no Tagalog words.
-- Sound like a friendly and competent call center agent.
-
-## MODE B: IF USER SPEAKS TAGALOG
-- Respond in natural conversational Tagalog.
-- Use "po" and "ho" naturally but not excessively.
-- Never say "Ma'am/Sir" — use "kayo" instead.
-- Sound warm and genuinely caring, like a real Filipino customer service rep.
-- Use natural expressions like "Sige", "Ay nako", "Sandali lang", "Check ko na yan", "Wag po kayong mag-alala."
+# LANGUAGE USAGE (English or Filipino)
+- Your default language is English
+- If the customer speaks in full Filipino sentences, reply in full Filipino.
+- If the customer mixes English and Filipino, reply in full English.
+- If the customer only says phrases in Filipino, reply in English. 
+    example: you say "What is your location?", customer says "Cebu" -> you reply should be in English, not Filipino.
 
 # STRICT AUDIO AND FORMATTING RULES
 - NO MARKDOWN: Never use bullet points, asterisks, or numbered lists.
@@ -153,17 +117,14 @@ Locations or cities mentioned without an explicit language switch should not tri
 - SHORT RESPONSES: Keep answers under 3 sentences. You are on a voice call, not writing an email.
 - ONE QUESTION RULE: Always end your turn with a single clear follow-up question.
 - NATURAL TONE: Sound like a real person, not a robot reading a script.
-- LIMIT REQUESTS FOR INFORMATION: Only ask for a maximum of two pieces of information at a time (e.g. "Can I have your account number?" instead of "Can I have your account number, contact number, and the details of your concern?")
-
-# STANDARD PROCEDURES
-1. Outages: Ask for the specific city or location before checking network status.
+- LIMIT REQUESTS FOR INFORMATION: Only ask for a maximum of ONE piece of information at a time (e.g. "Can I have your account number?" instead of "Can I have your account number, contact number, and the details of your concern?")
 """
 
 # ── Agent ──────────────────────────────────────────────
 
 tools = [
-    check_network_status_tool,
-    search_knowledge_base_tool, # RAG
+    call_network_agent,
+    call_knowledge_agent, # RAG
     call_customer_info_agent,
     call_calendar_agent,
     call_ticket_agent
@@ -175,8 +136,6 @@ agent = create_agent(
     system_prompt=system_prompt,
     checkpointer=InMemorySaver()
 )
-
-config = {"configurable": {"thread_id": "1"}}
 
 def run_agent(user_input: str, session_id: str) -> str:
     response = agent.invoke(

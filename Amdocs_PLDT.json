@@ -125,7 +125,7 @@
     {
       "parameters": {
         "content": "# General Knowledge",
-        "height": 576,
+        "height": 864,
         "width": 784,
         "color": 6
       },
@@ -208,7 +208,7 @@
       "typeVersion": 1,
       "position": [
         3088,
-        3088
+        2960
       ],
       "id": "3a99ae0b-b0fd-4d18-b009-7f7a5f9c6a89",
       "name": "Embeddings Ollama",
@@ -295,7 +295,7 @@
     },
     {
       "parameters": {
-        "model": "qwen/qwen3-coder",
+        "model": "meta-llama/llama-4-scout",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
@@ -346,7 +346,7 @@
     },
     {
       "parameters": {
-        "model": "qwen/qwen3-coder",
+        "model": "meta-llama/llama-4-scout",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
@@ -429,7 +429,7 @@
     },
     {
       "parameters": {
-        "model": "qwen/qwen3-coder",
+        "model": "meta-llama/llama-4-scout",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
@@ -547,7 +547,7 @@
         "promptType": "define",
         "text": "={{ $json.body.User_Request }}",
         "options": {
-          "systemMessage": "=# ROLE\nYou are a detail-oriented support agent for a Telecommunications company responsible for setting appointments between customers and PLDT representatives.\n\n# TASK\nYour task is to set appointments without violating any rules and restrictions.\n\n# RULES/RESTRICTIONS\n- appointment start date cannot be set before {{ $now.format('cccc, MMMM d, yyyy') }}\n- appointment date should only last 15 minutes\n- you are striclty an agent for setting appointments. any other requests should be respectfully denied.\n "
+          "systemMessage": "=# ROLE\nYou are a detail-oriented support agent for a Telecommunications company responsible for setting appointments between customers and PLDT representatives.\n\n# TASK\nYour task is to set appointments without violating any rules and restrictions.\n\n# RULES/RESTRICTIONS\n- appointment start date cannot be set before {{ $now.format('cccc, MMMM d, yyyy') }}\n- appointment date should only last 15 minutes\n- you are striclty an agent for setting appointments. any other requests should be respectfully denied.\n- if availability is 'false', DO NOT set an appointment.\n- Do not offer alternative appointment dates"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -558,54 +558,6 @@
       ],
       "id": "68fef334-aa1e-40ca-bede-63c9282de658",
       "name": "Calendar Agent"
-    },
-    {
-      "parameters": {
-        "toolDescription": "Use this tool only when the user asks about their past balances, payments, or unbilled payments.\n\nThis tool returns the following fields:\n- accountCategory\n- currentBalance\n- currentCharges\n- customerAccount\n- customerName\n- customerBday\n- customerId\n- dueDate\n- invoiceNumber\n- lastBillDate\n- lastPayment\n- paymentDate\n- previousBalance\n- totalUnbilled",
-        "url": "=https://pldtqa.pldt.com.ph/mobility/askpldt-api/customers/accounts/{{$fromAI('accountNumber', `The account number extracted from the conversation.`, 'string')}}/{{$fromAI('telephoneNumber', `The telephone number extracted from the conversation.`, 'string')}}",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Accept",
-              "value": "application/json"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequestTool",
-      "typeVersion": 4.4,
-      "position": [
-        2480,
-        2512
-      ],
-      "id": "85a3e5c7-f508-4690-a91c-6626e1247a5f",
-      "name": "GET Balance Inquiry"
-    },
-    {
-      "parameters": {
-        "toolDescription": "Use this tool to get the service operation status of a service.\n\nthis tool returns the following fields:\n- cancelReason\n- claritySoId\n- completeDate\n- facilityReserve\n- awaitPayment\n- soStatus\n- serviceType\n- spiel",
-        "url": "=https://pldtqa.pldt.com.ph/mobility/askpldt-api/customers/accounts/soStatus/{{$fromAI('accountNumber', `The account number extracted from the conversation.`, 'string')}}",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Accept",
-              "value": "application/json"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequestTool",
-      "typeVersion": 4.4,
-      "position": [
-        2624,
-        2512
-      ],
-      "id": "6a8096ec-9059-4f55-987b-3194a3ad5ab9",
-      "name": "GET Service Operation Status"
     },
     {
       "parameters": {
@@ -701,29 +653,6 @@
     },
     {
       "parameters": {
-        "url": "=https://pldtqa.pldt.com.ph/mobility/askpldt-api/customers/tickets/byServiceNumber/{{serviceNumber}}",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "serviceNumber",
-              "value": "025561266"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        1792,
-        1952
-      ],
-      "id": "4591e145-3414-4f54-9632-ccdfd1348396",
-      "name": "HTTP Request"
-    },
-    {
-      "parameters": {
         "toolDescription": "Use this tool to retrieve customer‑account information using a service number.\nYou must provide the service number in the 'serviceNumber' parameter.\n\nThe webhook returns customer account data with three main sections:\n1. `balanceProfile` - current and latest balance with statement info\n2. `serviceProfiles` - an array of active services (voice, DSL, etc.) with plan, credit, and status details\n3. `customerProfile` - full customer identity, billing, consent, loyalty, and verification data",
         "url": "=https://pldtqa.pldt.com.ph/mobility/amdocs/api/autocheckbalance/{{$fromAI('serviceNumber', `The service number extracted from the conversation.`, 'string')}}",
         "sendHeaders": true,
@@ -774,7 +703,7 @@
       "typeVersion": 2.2,
       "position": [
         2800,
-        2864
+        2736
       ],
       "id": "8d328ed8-670c-47eb-9cd5-585cd5fe6acb",
       "name": "Upload your file here",
@@ -797,7 +726,7 @@
       "typeVersion": 1.3,
       "position": [
         3328,
-        2864
+        2736
       ],
       "id": "cda91aff-013c-440b-b4f7-951da4f3dc41",
       "name": "Supabase Vector Store",
@@ -817,7 +746,7 @@
       "typeVersion": 1.1,
       "position": [
         2992,
-        2864
+        2736
       ],
       "id": "45809541-5b9b-4d3d-a97e-1a57750b7154",
       "name": "Extract from File"
@@ -841,7 +770,7 @@
       "typeVersion": 1.1,
       "position": [
         3328,
-        3088
+        2960
       ],
       "id": "cd4e40f0-7254-44e5-bd78-59efeddac73a",
       "name": "Default Data Loader"
@@ -856,10 +785,40 @@
       "typeVersion": 1,
       "position": [
         3168,
-        2864
+        2736
       ],
       "id": "ced4e0c5-4a8e-44c8-8a81-0c57b77aa791",
       "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool BEFORE setting new events.\n\nIf availability is false, an appointment cannot be set\notherwise, set the appointment.",
+        "resource": "calendar",
+        "calendar": {
+          "__rl": true,
+          "value": "89084f56faefdd85a764193118e07b47694ee5d5ebbecb3cdfb5bc3ab09e5f5c@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "N8N"
+        },
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start_Time', `the start date and time of the consultation set by the user. if no date and time is mentioned, return an error message.`, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End_Time', `this field must be 15 minutes after the start date and time.`, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        2576,
+        2992
+      ],
+      "id": "b26071f7-8c87-43fd-89d2-8bc7ec6ec203",
+      "name": "Get availability in a calendar in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "TtmPtgsQUTEEibXY",
+          "name": "Google Calendar account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -1111,16 +1070,6 @@
         ]
       ]
     },
-    "GET Balance Inquiry": {
-      "ai_tool": [
-        []
-      ]
-    },
-    "GET Service Operation Status": {
-      "ai_tool": [
-        []
-      ]
-    },
     "Ticket Agent1": {
       "main": [
         [
@@ -1208,6 +1157,17 @@
           }
         ]
       ]
+    },
+    "Get availability in a calendar in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -1216,7 +1176,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "4d09c1b1-b018-499e-a519-485594dc435a",
+  "versionId": "8041e54b-76eb-47a3-8aa8-5d7e12dbada2",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6706564d2fe2eb9a69ad5152cc9c7ff9ced876386855f98d0502def674fe6a0d"

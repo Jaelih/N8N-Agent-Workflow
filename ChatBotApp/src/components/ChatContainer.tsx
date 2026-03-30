@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { ReceiptText, Radio, Wrench, Wifi, Clock, Menu, PanelLeftOpen } from 'lucide-react'
+import { ReceiptText, Radio, Calendar, Rainbow, Clock, Menu, PanelLeftOpen } from 'lucide-react'
 import type { Message } from '../components/types'
 import type { VoiceStatus } from './VoiceRecorder'
 import MessageBubble from './MessageBubble'
@@ -275,10 +275,10 @@ interface WelcomeCardProps {
 
 function WelcomeCard({ onSuggestionClick }: WelcomeCardProps) {
   const suggestions = [
-    { Icon: ReceiptText,   label: 'Check my bill status' },
-    { Icon: Radio,         label: 'Check outages in my area' },
-    { Icon: Wrench,        label: 'Report internet issue' },
-    { Icon: Wifi, label: 'What are your fiber plans?' },
+    { Icon: ReceiptText,   label: 'Check my balance information' },
+    { Icon: Radio,         label: 'Is there an outage in my area?' },
+    { Icon: Calendar,        label: 'Set an appointment' },
+    { Icon: Rainbow, label: 'Blinking red light on my modem' },
   ]
 
   return (
