@@ -4,11 +4,12 @@ from dotenv import load_dotenv
 from app.stt import transcribe_audio
 from app.tts import speak, get_remaining_credits
 from app.agent import run_agent
-from app.database import init_db, save_message, get_history, clear_history
+from app.database import init_db, save_message, clear_history
 from fastapi.middleware.cors import CORSMiddleware
 
 import shutil
 import os
+import uuid
 
 load_dotenv()
 init_db()
@@ -35,7 +36,7 @@ async def voice_chat(
     audio: UploadFile = File(...),
     session_id: str = Form(default="default")
 ):
-    temp_path = f"temp_{session_id}.wav"
+    temp_path = f"temp_{session_id}_{uuid.uuid4().hex}.wav"
     with open(temp_path, "wb") as f:
         shutil.copyfileobj(audio.file, f)
 
@@ -47,8 +48,8 @@ async def voice_chat(
     # Step 2: Get chat history
     # history = get_history(session_id)
 
-    # Step 3: Run LangChain Agent
-    agent_response = run_agent(user_text, session_id)
+    # Step 3: Run ADK Agent
+    agent_response = await run_agent(user_text, session_id)
     print(f"Gabby [{session_id}]: {agent_response}")
 
     # Step 4: Save conversation
@@ -74,7 +75,7 @@ async def text_chat(body: dict):
 
     # history = get_history(session_id)
 
-    response = run_agent(user_input, session_id)
+    response = await run_agent(user_input, session_id)
 
     save_message(session_id, "user", user_input)
     save_message(session_id, "assistant", response)

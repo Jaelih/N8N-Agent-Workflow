@@ -1,10 +1,16 @@
-import requests
 import os
+import requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from dotenv import load_dotenv
 
+from google.adk.tools import FunctionTool
+
 load_dotenv()
+
+# ─────────────────────────────────────────────
+# WEBHOOK CONFIG (UNCHANGED)
+# ─────────────────────────────────────────────
 
 TICKET_WEBHOOK = os.getenv("N8N_TICKET_WEBHOOK")
 NETWORK_WEBHOOK = os.getenv("N8N_NETWORK_WEBHOOK")
@@ -22,59 +28,70 @@ HEADERS = {
     "X-Pldt-Auth-Token": X_PLDT_AUTH_TOKEN
 }
 
+# ─────────────────────────────────────────────
+# CORE WEBHOOK FUNCTION (UNCHANGED)
+# ─────────────────────────────────────────────
 
 def call_webhook(url: str, data: dict, headers: dict = HEADERS) -> dict:
     try:
         response = requests.post(url, json=data, headers=headers, timeout=30)
         response.raise_for_status()
+
         if not response.text:
             return {"error": "Empty response from n8n"}
+
         return response.json()
+
     except requests.exceptions.Timeout:
         return {"error": "Request timed out. Please try again."}
+
     except requests.exceptions.HTTPError as e:
         return {"error": f"Webhook error: {str(e)}"}
+
     except Exception as e:
         return {"error": str(e)}
 
-def customer_info_agent(user_request: str) -> dict:
-    print(f"customer_info_agent called with: {user_request}")
-    r = call_webhook(CUSTOMER_INFO_WEBHOOK, {
+# ─────────────────────────────────────────────
+# ADK TOOLS (WRAPPED VERSION)
+# ─────────────────────────────────────────────
+
+def customer_info_tool(user_request: str) -> dict:
+    """Fetch customer account information."""
+    return call_webhook(CUSTOMER_INFO_WEBHOOK, {
         "User_Request": user_request
     })
-    return r
 
-def ticket_agent(user_request: str) -> dict:
-    print(f"ticket_agent called with: {user_request}")
+
+def ticket_tool(user_request: str) -> dict:
+    """Create or retrieve support tickets."""
     return call_webhook(TICKET_WEBHOOK, {
         "User_Request": user_request
     })
 
-def network_agent(area: str) -> dict:
-    print(f"network_agent called with: {area}")
-    r = call_webhook(NETWORK_WEBHOOK, {
+
+def network_tool(area: str) -> dict:
+    """Check network outage status in a given area."""
+    return call_webhook(NETWORK_WEBHOOK, {
         "User_Request": f"Check network status in {area}"
     })
-    print(f"network_agent: {r}")
-    return r
 
-def knowledge_agent(question: str) -> dict:
-    print(f"knowledge_agent called with: {question}")
-    r = call_webhook(KNOWLEDGE_WEBHOOK, {
+
+def knowledge_tool(question: str) -> dict:
+    """Search knowledge base for troubleshooting and FAQs."""
+    return call_webhook(KNOWLEDGE_WEBHOOK, {
         "User_Request": question
     })
-    print(f"knowledge_agent: {r}")
-    return r
 
-def calendar_agent(month: str, day:str, time:str, reason: str) -> dict:
-    print(f"calendar_agent called with: {month}, {day}, {time}, {reason}")
-    r = call_webhook(CALENDAR_WEBHOOK, {
-        "User_Request": f"Set meeting date for {month} {day} at {time}\n reason: {reason}"
+
+def calendar_tool(month: str, day: str, time: str, reason: str) -> dict:
+    """Schedule a customer appointment."""
+    return call_webhook(CALENDAR_WEBHOOK, {
+        "User_Request": f"Set meeting date for {month} {day} at {time} reason: {reason}"
     })
-    print(f"calendar_agent: {r}")
-    return r
 
-def get_current_time() -> dict:
+
+def current_time_tool() -> dict:
+    """Get current time in Asia/Manila."""
     now = datetime.now(ZoneInfo("Asia/Manila"))
     return {
         "time": now.strftime("%I:%M %p"),
@@ -82,4 +99,3 @@ def get_current_time() -> dict:
         "datetime": now.strftime("%A, %B %d, %Y %I:%M %p"),
         "timezone": "Asia/Manila"
     }
-

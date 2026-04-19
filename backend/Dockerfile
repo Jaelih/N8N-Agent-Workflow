@@ -1,24 +1,30 @@
-FROM python:3.11-slim
+FROM python:3.11
 
 WORKDIR /app
 
-# Install system dependencies for audio processing
+# System dependencies (audio + ML stability)
 RUN apt-get update && apt-get install -y \
     ffmpeg \
+    build-essential \
+    libsndfile1 \
+    portaudio19-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
+# Upgrade pip tools
+RUN pip install --upgrade pip setuptools wheel
+
+# Copy requirements first (cache optimization)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Copy app
 COPY . .
 
-# Create directory for audio files
+# Create audio directory
 RUN mkdir -p /app/audio
 
-# Expose port
+# Expose FastAPI port
 EXPOSE 8000
 
-# Run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Run app (production mode)
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

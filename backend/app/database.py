@@ -1,5 +1,4 @@
 import sqlite3
-from langchain_core.messages import HumanMessage, AIMessage
 
 DB_PATH = "chat_history.db"
 
@@ -34,14 +33,7 @@ def get_history(session_id: str) -> list:
     )
     rows = cursor.fetchall()
     conn.close()
-
-    history = []
-    for role, message in rows:
-        if role == "human":
-            history.append(HumanMessage(content=message))
-        else:
-            history.append(AIMessage(content=message))
-    return history
+    return [{"role": role, "message": message} for role, message in rows]
 
 def clear_history(session_id: str):
     conn = sqlite3.connect(DB_PATH)
