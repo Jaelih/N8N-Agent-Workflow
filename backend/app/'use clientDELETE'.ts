@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { ReceiptText, Radio, Calendar, Rainbow, Clock, Menu, PanelLeftOpen } from 'lucide-react'
+import { ReceiptText, Radio, Calendar Rainbow, Clock, Menu, PanelLeftOpen } from 'lucide-react'
 import type { Message } from '../components/types'
 import type { VoiceStatus } from './VoiceRecorder'
 import MessageBubble from './MessageBubble'
@@ -330,7 +330,7 @@ function WelcomeCard({ onSuggestionClick }: WelcomeCardProps) {
               ))}
             </ul>
             <p className="text-xs text-gray-400 mt-4 font-semibold">
-              No waiting. Just ask below. ↓
+              No waiting. No hold music. Just ask below. ↓
             </p>
           </div>
         </div>

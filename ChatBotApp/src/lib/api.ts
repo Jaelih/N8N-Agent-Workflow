@@ -10,7 +10,6 @@ export const api = {
       method: "POST",
       headers: { 
         "Content-Type": "application/json",
-        // 👇 THIS IS THE MAGIC FIX 👇
         "ngrok-skip-browser-warning": "true" 
       },
       body: JSON.stringify({ message, session_id: sessionId }),
