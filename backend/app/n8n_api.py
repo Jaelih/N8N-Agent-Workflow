@@ -4,13 +4,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from dotenv import load_dotenv
 
-from google.adk.tools import FunctionTool
-
 load_dotenv()
-
-# ─────────────────────────────────────────────
-# WEBHOOK CONFIG (UNCHANGED)
-# ─────────────────────────────────────────────
 
 TICKET_WEBHOOK = os.getenv("N8N_TICKET_WEBHOOK")
 NETWORK_WEBHOOK = os.getenv("N8N_NETWORK_WEBHOOK")
@@ -27,10 +21,6 @@ HEADERS = {
     "Accept": "application/json",
     "X-Pldt-Auth-Token": X_PLDT_AUTH_TOKEN
 }
-
-# ─────────────────────────────────────────────
-# CORE WEBHOOK FUNCTION (UNCHANGED)
-# ─────────────────────────────────────────────
 
 def call_webhook(url: str, data: dict, headers: dict = HEADERS) -> dict:
     try:
