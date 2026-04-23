@@ -22,9 +22,9 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
     return (
       <div className="flex items-end justify-end gap-3 animate-slide-up">
         {/* Bubble */}
-        <div className="flex flex-col items-end max-w-[75%] sm:max-w-[70%]">
-          <div className="relative px-5 py-3.5 rounded-2xl rounded-br-md bg-gradient-to-br from-pldt-red via-[#C8002A] to-pldt-red-dark text-white shadow-xl shadow-pldt-red/25 border border-pldt-red-dark/20">
-            <p className="text-sm leading-relaxed whitespace-pre-wrap break-words relative z-10">
+        <div className="flex flex-col items-end max-w-[75%] sm:max-w-[70%] w-fit">
+          <div className="relative w-fit px-5 py-3.5 rounded-2xl rounded-br-md bg-gradient-to-br from-pldt-red via-[#C8002A] to-pldt-red-dark text-white shadow-xl shadow-pldt-red/25 border border-pldt-red-dark/20">
+            <p className="text-sm leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere] relative z-10">
               {message.content}
             </p>
             {/* Subtle shine effect */}
@@ -49,13 +49,13 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
       <div className="relative w-9 h-9 mb-6">
         <div className="absolute inset-0 bg-pldt-red/20 rounded-full blur-sm" />
         <div className="relative w-9 h-9 rounded-full bg-white border-2 border-gray-100 flex items-center justify-center flex-shrink-0 shadow-lg p-1.5">
-          <img src={pldtIcon} alt="Gabby AI" className="w-full h-full object-contain" />
+          <img src={pldtIcon} alt="Stelle AI" className="w-full h-full object-contain" />
         </div>
       </div>
       {/* Bubble */}
-      <div className="flex flex-col items-start max-w-[75%] sm:max-w-[70%]">
-        <div className="relative px-5 py-3.5 rounded-2xl rounded-bl-md bg-white text-gray-800 shadow-lg border-2 border-gray-100 hover:shadow-xl transition-shadow">
-          <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+      <div className="flex flex-col items-start max-w-[75%] sm:max-w-[70%] w-fit">
+        <div className="relative w-fit px-5 py-3.5 rounded-2xl rounded-bl-md bg-white text-gray-800 shadow-lg border-2 border-gray-100 hover:shadow-xl transition-shadow">
+          <p className="text-sm leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere]">
             {message.content}
           </p>
           {message.audioUrl && (

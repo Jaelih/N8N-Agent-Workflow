@@ -5,7 +5,7 @@ export default function TypingIndicator() {
     <div className="flex items-end gap-3 animate-fade-in">
       {/* Bot avatar — PLDT icon */}
       <div className="w-9 h-9 rounded-full bg-white border-2 border-gray-100 flex items-center justify-center flex-shrink-0 shadow-md p-1.5">
-        <img src={pldtIcon} alt="Gabby AI" className="w-full h-full object-contain" />
+        <img src={pldtIcon} alt="Stelle AI" className="w-full h-full object-contain" />
       </div>
       {/* Dots bubble */}
       <div className="px-5 py-4 rounded-2xl rounded-bl-md bg-white shadow-md border border-gray-100">

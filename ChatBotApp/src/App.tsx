@@ -66,7 +66,7 @@ function App() {
             We're here to help you.
           </h2>
           <p className="text-gray-500 text-sm leading-relaxed">
-            Chat with Gabby for instant support, or explore our latest plans and offers below.
+            Chat with Stelle for instant support, or explore our latest plans and offers below.
           </p>
         </div>
 

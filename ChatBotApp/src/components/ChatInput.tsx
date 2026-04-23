@@ -2,6 +2,8 @@ import { useState, useRef, useEffect, type KeyboardEvent } from 'react'
 import { Send, Loader2, CheckCircle2, XCircle } from 'lucide-react'
 import VoiceRecorder, { type VoiceStatus } from './VoiceRecorder'
 
+const MAX_TEXTAREA_HEIGHT = 128 // px — matches max-h-32
+
 interface ChatInputProps {
   onSendMessage: (content: string) => void
   onVoiceMessage?: (audioBlob: Blob) => void
@@ -42,10 +44,12 @@ export default function ChatInput({
   }
 
   useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
-    }
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    const next = Math.min(el.scrollHeight, MAX_TEXTAREA_HEIGHT)
+    el.style.height = `${next}px`
+    el.style.overflowY = next >= MAX_TEXTAREA_HEIGHT ? 'auto' : 'hidden'
   }, [input])
 
   return (
@@ -95,7 +99,7 @@ export default function ChatInput({
               placeholder="Type your message..."
               disabled={disabled}
               rows={1}
-              className="relative w-full resize-none rounded-2xl px-5 py-4 text-sm
+              className="relative w-full resize-none rounded-2xl px-5 text-sm
                 bg-white
                 border-2 border-gray-200
                 text-pldt-gray
@@ -103,13 +107,14 @@ export default function ChatInput({
                 focus:outline-none focus:ring-2 focus:ring-pldt-red/30 focus:border-pldt-red focus:bg-white
                 disabled:opacity-50 disabled:cursor-not-allowed
                 transition-all duration-200
-                max-h-32 overflow-y-auto shadow-lg hover:shadow-xl hover:border-gray-300"
+                overflow-y-hidden shadow-lg hover:shadow-xl hover:border-gray-300
+                min-h-[48px] leading-[1.4] py-[14px]"
             />
           </div>
           <button
             onClick={handleSubmit}
             disabled={!input.trim() || disabled}
-            className="relative flex items-center justify-center h-12 w-12 rounded-full
+            className="relative flex items-center justify-center h-12 w-12 rounded-full self-end mb-[5px]
               bg-gradient-to-br from-pldt-red via-[#C8002A] to-pldt-red-dark text-white
               hover:from-pldt-red-dark hover:via-pldt-red hover:to-pldt-red-dark
               disabled:bg-gray-200 disabled:text-gray-400 disabled:from-gray-200 disabled:to-gray-200

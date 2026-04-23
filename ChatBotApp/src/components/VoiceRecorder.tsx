@@ -174,7 +174,7 @@ export default function VoiceRecorder({
   const isButtonDisabled = disabled || isBusy
 
   return (
-    <div className="flex items-center flex-shrink-0">
+    <div className="flex items-end flex-shrink-0 self-end mb-[5px]">
 
       {/* ── Recording: waveform circle + timer ────────────────────── */}
       {isRecording ? (
@@ -183,7 +183,7 @@ export default function VoiceRecorder({
           <button
             onClick={stopRecording}
             aria-label="Stop recording"
-            className="relative flex items-center justify-center h-10 w-10 rounded-full
+            className="relative flex items-center justify-center h-12 w-12 rounded-full
               bg-red-500 shadow-lg
               hover:bg-red-600 active:scale-95
               transition-all duration-150
@@ -217,7 +217,7 @@ export default function VoiceRecorder({
           disabled={isButtonDisabled}
           size="icon"
           aria-label="Start voice message"
-          className={`rounded-full h-10 w-10 shadow-md hover:shadow-lg transition-all ${
+          className={`rounded-full h-12 w-12 shadow-md hover:shadow-lg transition-all ${
             voiceStatus === 'error' ? 'ring-2 ring-red-400' : ''
           }`}
         >
