@@ -15,6 +15,8 @@ backend/.env
 backend/.pytest_cache/
 backend/response_*.mp3
 backend/temp_*.wav
+backend/chat_history.db
+backend/temp_session*.wav
 
 # --- Frontend (React + Vite) ---
 ChatBotApp/node_modules/

@@ -3,7 +3,6 @@ import os
 import torch
 import whisper
 
-# Lazy-loaded — only downloaded/loaded on first transcription request
 _model = None
 
 def _get_model():
@@ -15,10 +14,8 @@ def _get_model():
     return _model
 
 def preprocess_audio(input_path: str) -> str:
-    """Convert audio to 16kHz mono WAV — optimal format for Whisper"""
-    base = os.path.splitext(input_path)[0]   # strip any extension
-    output_path = f"{base}_processed.wav"    # always a different filename
-
+    base = os.path.splitext(input_path)[0]
+    output_path = f"{base}_processed.wav"
     subprocess.run([
         "ffmpeg", "-y",
         "-i", input_path,
@@ -30,10 +27,6 @@ def preprocess_audio(input_path: str) -> str:
     return output_path
 
 def transcribe_audio(audio_file_path: str) -> str:
-    """
-    Transcribes audio file to text using Whisper.
-    Supports Tagalog and Taglish.
-    """
     processed_path = preprocess_audio(audio_file_path)
     try:
         result = _get_model().transcribe(
@@ -42,16 +35,11 @@ def transcribe_audio(audio_file_path: str) -> str:
             task="transcribe",
             prompt=(
                 "PLDT customer service call. Taglish conversation. "
-                "Keywords: internet, billing, outage, broadband, DSL, Fibr, WiFi, "
-                "load, bill, bayad, account, signal, connection, router, modem, "
-                "Meralco, Globe, Smart, prepaid, postpaid, plan, upgrade, dito, "
-                "saan, kailan, magkano, hindi, wala, gusto, kailangan, tulong, "
-                "network, load, account, signal, connection, router, modem, outage"
-                "Manila, Cebu, Davao, Quezon City, Makati, Pasig, Taguig, Caloocan, Las Piñas, Zambales, Batangas, Laguna, Cavite, Rizal, Pampanga, Bulacan, Bataan, Tarlac, Nueva Ecija, Pangasinan, Ilocos, Visayas, Mindanao, Luzon, Boracay, Palawan, Bohol, Siargao, Camiguin, Marinduque, Romblon, Catanduanes, Masbate, Sorsogon, Albay, Samar, Leyte, Biliran, Dinagat Islands, Siquijor, Guimaras, Marawi, Cotabato, General Santos, Zamboanga, Iligan, Cagayan de Oro, Tagum, Butuan, Koronadal"
+                "Keywords: internet, billing, outage, broadband, WiFi, "
+                "load, bill, bayad, account, signal, connection, router, modem"
             )
         )
         return result["text"].strip()
     finally:
-        # always clean up the processed file
         if os.path.exists(processed_path):
             os.remove(processed_path)

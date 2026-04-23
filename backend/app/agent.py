@@ -7,9 +7,6 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langchain.messages import HumanMessage, SystemMessage
 
 from app.n8n_api import (
-    # get_billing,
-    # get_customer,
-    # submit_ticket,
     network_agent,
     knowledge_agent,
     customer_info_agent,
