@@ -267,12 +267,49 @@ interface WelcomeCardProps {
 }
 
 function WelcomeCard({ onSuggestionClick }: WelcomeCardProps) {
-  const suggestions = [
-    { Icon: ReceiptText,   label: 'Check my balance information' },
-    { Icon: Radio,         label: 'Is there an outage in my area?' },
-    { Icon: Calendar,        label: 'Set an appointment' },
-    { Icon: Rainbow, label: 'Blinking red light on my modem' },
+  const categories = [
+    {
+      Icon: ReceiptText,
+      label: 'Billing & account',
+      items: [
+        'Check my balance information',
+        'View my latest bill',
+        'Payment methods and due dates',
+        'Update account details',
+      ],
+    },
+    {
+      Icon: Radio,
+      label: 'Network & outages',
+      items: [
+        'Is there an outage in my area?',
+        'Internet is slow right now',
+        'No internet connection',
+        'Service interruption updates',
+      ],
+    },
+    {
+      Icon: Calendar,
+      label: 'Appointments',
+      items: [
+        'Set an appointment',
+        'Reschedule a visit',
+        'Track my technician schedule',
+      ],
+    },
+    {
+      Icon: Rainbow,
+      label: 'Device & technical',
+      items: [
+        'Blinking red light on my modem',
+        'How to reset my router',
+        'Wi-Fi not showing up',
+        'Device troubleshooting steps',
+      ],
+    },
   ]
+
+  const [activeCategory, setActiveCategory] = useState(categories[0])
 
   return (
     <div className="animate-fade-in space-y-5">
@@ -329,41 +366,69 @@ function WelcomeCard({ onSuggestionClick }: WelcomeCardProps) {
         </div>
       </div>
 
-      {/* ── Quick action grid ────────────────────────────────── */}
+      {/* ── Categorized quick actions ───────────────────────── */}
       <div>
         <p className="text-[11px] font-extrabold text-gray-400 uppercase tracking-widest mb-3.5 px-1">
           Quick Actions
         </p>
         <div className="grid grid-cols-2 gap-3">
-          {suggestions.map(({ Icon, label }) => {
-            const isFiber = label.toLowerCase().includes('fiber')
+          {categories.map((category) => {
+            const isActive = category.label === activeCategory.label
             return (
               <button
-                key={label}
-                onClick={() => onSuggestionClick(label)}
+                key={category.label}
+                onClick={() => setActiveCategory(category)}
                 className={`relative flex items-start gap-3 px-4 py-4 rounded-2xl text-left
-                  active:scale-[0.97] transition-all duration-200 group overflow-hidden
-                  ${isFiber
-                    ? 'bg-gradient-to-br from-[#C8002A] via-[#B8002A] to-[#9A0020] border-0 hover:opacity-90 shadow-xl hover:shadow-2xl'
-                    : 'border-2 border-gray-200 bg-white hover:border-pldt-red hover:bg-gradient-to-br hover:from-red-50 hover:to-white shadow-lg hover:shadow-xl'
+                  active:scale-[0.97] transition-all duration-200 group overflow-hidden border-2
+                  ${isActive
+                    ? 'border-pldt-red bg-gradient-to-br from-red-50 via-white to-white shadow-xl'
+                    : 'border-gray-200 bg-white hover:border-pldt-red hover:bg-gradient-to-br hover:from-red-50 hover:to-white shadow-lg hover:shadow-xl'
                   }`}
+                aria-pressed={isActive}
               >
                 {/* Decorative shine effect */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${isFiber ? 'from-white/10' : 'from-white'} to-transparent pointer-events-none`} />
-                
+                <div className="absolute inset-0 bg-gradient-to-br from-white to-transparent pointer-events-none" />
+
                 <div className={`relative w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-200
-                  ${isFiber ? 'bg-white/20 backdrop-blur-sm group-hover:bg-white/30' : 'bg-gradient-to-br from-gray-100 to-gray-50 group-hover:from-red-100 group-hover:to-red-50'}`}>
-                  <Icon className={`w-4 h-4 transition-colors
-                    ${isFiber ? 'text-white' : 'text-gray-500 group-hover:text-pldt-red'}`} />
+                  ${isActive ? 'bg-gradient-to-br from-red-100 to-red-50' : 'bg-gradient-to-br from-gray-100 to-gray-50 group-hover:from-red-100 group-hover:to-red-50'}`}>
+                  <category.Icon className={`w-4 h-4 transition-colors
+                    ${isActive ? 'text-pldt-red' : 'text-gray-500 group-hover:text-pldt-red'}`} />
                 </div>
-                <span className={`relative text-xs font-bold leading-snug transition-colors pt-1
-                  ${isFiber ? 'text-white' : 'text-gray-700 group-hover:text-pldt-red'}`}>
-                  {label}
-                </span>
-                {isFiber && <span className="ml-auto text-white/70 text-sm self-center font-bold">→</span>}
+                <div className="relative">
+                  <span className={`block text-xs font-bold leading-snug transition-colors
+                    ${isActive ? 'text-pldt-red' : 'text-gray-700 group-hover:text-pldt-red'}`}>
+                    {category.label}
+                  </span>
+                  <span className="text-[10px] text-gray-400 font-semibold">
+                    {category.items.length} topics
+                  </span>
+                </div>
               </button>
             )
           })}
+        </div>
+
+        <div className="mt-5 bg-white border-2 border-gray-200 rounded-2xl p-4 shadow-lg">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-red-100 to-red-50 flex items-center justify-center">
+              <activeCategory.Icon className="w-3.5 h-3.5 text-pldt-red" />
+            </div>
+            <p className="text-xs font-extrabold text-gray-700 uppercase tracking-widest">
+              {activeCategory.label}
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-2">
+            {activeCategory.items.map((label) => (
+              <button
+                key={label}
+                onClick={() => onSuggestionClick(label)}
+                className="text-left text-xs font-semibold text-gray-700 border border-gray-200 rounded-xl px-3 py-2.5
+                  hover:border-pldt-red hover:text-pldt-red hover:bg-red-50 transition-colors"
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>
