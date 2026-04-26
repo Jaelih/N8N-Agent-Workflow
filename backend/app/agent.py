@@ -3,12 +3,16 @@ from langchain_openai import ChatOpenAI
 from langchain.tools import tool
 from langchain.agents import create_agent
 from dotenv import load_dotenv
+from langgraph.checkpoint.memory import InMemorySaver
+from langchain.messages import HumanMessage, SystemMessage
+
 from app.n8n_api import (
-    get_billing,
-    get_customer,
-    submit_ticket,
-    check_network,
-    get_knowledge
+    network_agent,
+    knowledge_agent,
+    customer_info_agent,
+    calendar_agent,
+    get_current_time,
+    ticket_agent
 )
 
 load_dotenv()
@@ -28,119 +32,118 @@ llm = ChatOpenAI(
 # ── Tools ──────────────────────────────────────────────
 
 @tool
-def get_billing_status(account_number: str) -> dict:
+def call_customer_info_agent(user_request: str) -> dict:
     """
-    Retrieves billing status of a PLDT customer by account number.
-    Always ask the customer for their account number before calling this.
-    """
-    return get_billing(account_number)
+    Call this agent for retrieving customer account information using their service number.
 
-
-@tool
-def get_customer_info(customer_id: str) -> dict:
-    """
-    Retrieves customer account information using their customer ID.
-    Use this to verify customer identity before showing billing info.
-    """
-    return get_customer(customer_id)
-
+    This agent is capable providing the following information:
+    1. `balanceProfile` - current and latest balance with statement info
+    2. `serviceProfiles` - an array of active services (voice, DSL, etc.) with plan, credit, and status details
+    3. `customerProfile` - full customer identity, billing, consent, loyalty, and verification data
+    """ 
+    return customer_info_agent(user_request)
 
 @tool
-def submit_support_ticket(account_number: str, concern: str, contact_number: str) -> dict:
+def call_network_agent(area: str) -> dict:
     """
-    Submits a support ticket for unresolved customer issues.
-    Always get account number and contact number before calling this.
-    """
-    return submit_ticket(account_number, concern, contact_number)
-
-
-@tool
-def check_network_status(area: str) -> dict:
-    """
-    Checks for active network outages in a given city or area in the Philippines.
+    Call this agent to check for active network outages in a given city or area in the Philippines.
     Call this immediately when customer mentions any area or location.
     If has_outage is True inform the customer there IS an active outage.
     If has_outage is False inform the customer there is NO outage.
     """
-    return check_network(area)
+    return network_agent(area)
 
 
 @tool
-def search_knowledge_base(question: str) -> dict:
+def call_knowledge_agent(question: str) -> dict:
     """
-    Searches the PLDT knowledge base for answers to frequently asked questions.
-    Use this for general questions about PLDT services, plans, and policies.
+    Call this agent to search the PLDT knowledge base for answers to frequently asked questions.
+    Call this agent when the customer mentions:
+    - a blinking red light
+    - slow internet speed
+    - lag
+    - billing payment channels
+    - where/how to pay bills
     """
-    return get_knowledge(question)
+    return knowledge_agent(question)
 
+@tool
+def call_calendar_agent(month: str, day: str, time: str, reason: str) -> dict:
+    """
+    Call this agent when the customer wants to set up an appointment or meeting.
+    This agent is responsible for scheduling a meeting with a PLDT representative on the date explicitly specified by the user.
 
+    # NOTES
+    - There must be a clear start date and time, except for the year- let the agent handle that.
+    - The appointment cannot be scheduled for a past date. Always confirm the date with the customer before calling this tool.
+    - Only include a reason for the meeting if the customer explicitly states it. Do not assume or make up a reason. Otherwise just say "No reason specified".
+    """
+    current_year = get_current_time()["date"].split(", ")[1]
+    return calendar_agent(month, day, time, reason)
+
+@tool
+def call_ticket_agent(user_request: str) -> dict:
+    """
+    Call this agent for creating and retrieving support tickets.
+
+    # Creating Tickets:
+    - Creating tickets is the final step for unresolved issues that require human intervention.
+
+    # Retrieving Tickets:
+    - To retrieve a ticket, a service number is required.
+    - If there are no ticket details returned, there is no need to escalate the situation. Simply say that the customer has no open tickets.
+
+    # This agent is only for ticket creation and retrieval, not setting appointments.
+    """
+    return ticket_agent(user_request)
 # ── System Prompt ──────────────────────────────────────
 
 system_prompt = """
-IDENTITY:
-You are Gabby, a PLDT customer service voice assistant. Your goal is to be helpful, concise, and sound like a real human agent in the Philippines.
+# IDENTITY:
+You are Gabby, a PLDT customer service voice assistant. Your goal is to be concise, and sound like a real human agent.
+You are hospitable but go straight to the point, and avoid unnecessary explanations.
+You speak in a conversational manner, avoiding brackets, bullet points, or lists. You always respond in complete sentences.
 
-### CRITICAL: DYNAMIC LANGUAGE ADAPTATION
-**You must match the language the user is speaking.**
+# LANGUAGE USAGE (English or Filipino )
+- Your default language is English
+- If the customer speaks in full Filipino sentences, reply in full Filipino.
+- If the customer mixes English and Filipino, reply in full English.
+- If the customer only says phrases in Filipino, reply in English. 
+    example: you say "What is your location?", customer says "Cebu" -> you reply should be in English, not Filipino.
 
-**MODE A: IF USER SPEAKS ENGLISH**
-- Respond in clear, professional, but warm **Philippine English**.
-- Use "Ma'am" or "Sir" to show respect instead of "po".
-- Do not mix Tagalog words. Keep it straight English.
-- Example: "I'm sorry to hear about the connection issue, Sir. May I have your account number so I can check?"
+# STRICT RULES
+- Never respond with JSON or any code-like formatting. Always respond in natural language sentences.
+- Never use bullet points, asterisks, or numbered lists.
+- Never say "The network status is..." or "I am an AI" or "Ma'am/Sir."
+- Always end your turn with a single clear follow-up question.
+- Only ask for a maximum of ONE piece of information at a time (e.g. "Can I have your account number?" instead of "Can I have your account number, contact number, and the details of your concern?")
 
-**MODE B: IF USER SPEAKS TAGALOG OR TAGLISH**
-- Respond in natural, conversational **Taglish** (Manila style).
-- Use "po" and "ho" frequently.
-- Use natural fillers like "Bale," "Actually," or "Wait lang po."
-- Example: "Naku, pasensya na po sa abala. Taga-saan po ba sila banda para ma-check ko yung signal?"
-
----
-
-### STRICT AUDIO & FORMATTING RULES (ALL MODES)
-- **NO MARKDOWN:** Never use bullet points, bolding (**), asterisks, or numbered lists.
-- **NO ROBOTIC PHRASING:** Avoid saying "The network status is..." or "I am an AI."
-- **SHORT RESPONSES:** Keep answers under 3 sentences. You are on a voice call, not email.
-- **ONE QUESTION RULE:** Always end your turn with a single, clear follow-up question.
-
-### STANDARD PROCEDURES
-1. **Verification:** Ask for the **Customer ID** before checking bills or tickets.
-2. **Outages:** Ask for the specific **City/Location** before checking network status.
-3. **Empathy:** Always apologize sincerely for slow internet or bad service before asking for details.
-
----
-
-### FEW-SHOT EXAMPLES
-
-User: "My internet is really slow today."
-Gabby: "I apologize for the inconvenience, Ma'am. I know how important connection is. May I know which city you are located in so I can check for outages?"
-
-User: "Walang internet dito sa bahay."
-Gabby: "Hala, sorry po talaga diyan. Taga-saan po ba sila banda para ma-check natin kung may maintenance sa area?"
-
-User: "I want to pay my bill."
-Gabby: "Sure, I can assist you with that, Sir. Do you have your account number ready?"
-
-User: "Magkano yung babayaran ko?"
-Gabby: "Sige po, check natin yan. Pwede ko po bang makuha yung account number niyo?"
+# CURRENCY
+- default currency is Philippine Peso (₱). Always use the peso sign when mentioning amounts, and never say "PHP" or "pesos".
 """
 
 # ── Agent ──────────────────────────────────────────────
 
 tools = [
-    get_billing_status,
-    get_customer_info,
-    submit_support_ticket,
-    check_network_status,
-    search_knowledge_base
+    call_network_agent,
+    call_knowledge_agent, # RAG
+    call_customer_info_agent,
+    call_calendar_agent,
+    call_ticket_agent
 ]
 
-agent_executor = create_agent(
+agent = create_agent(
     model=llm,
     tools=tools,
+    system_prompt=system_prompt,
+    checkpointer=InMemorySaver()
 )
 
-def run_agent(user_input: str, chat_history: list) -> str:
-    messages = [{"role": "system", "content": system_prompt}] + chat_history + [{"role": "user", "content": user_input}]
-    response = agent_executor.invoke({"messages": messages})
+def run_agent(user_input: str, session_id: str) -> str:
+    response = agent.invoke(
+        {"messages": [
+            SystemMessage(content=f"current time: {get_current_time()}"),
+            HumanMessage(content=user_input)]},
+        config={"configurable": {"thread_id": session_id}}
+    )
     return response["messages"][-1].content

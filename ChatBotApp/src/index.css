@@ -92,7 +92,18 @@
   }
   
   .animate-pulse-subtle {
-    animation: pulse-subtle 2s ease-in-out infinite;
+    animation: pulse-subtle 3s ease-in-out infinite;
+  }
+  
+  /* Modern glassmorphism effect */
+  .glass-effect {
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Premium drop shadow for text */
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
 
   .animate-pulse-slow {
@@ -132,121 +143,41 @@
 @keyframes pulse-subtle {
   0%, 100% {
     opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
-@keyframes pulse-slow {
-  0%, 100% {
-    opacity: 0.3;
     transform: scale(1);
   }
   50% {
-    opacity: 0.5;
+    opacity: 0.8;
     transform: scale(1.05);
   }
 }
 
-@keyframes glow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(214, 0, 28, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(214, 0, 28, 0.4);
-  }
+/* Modern Scrollbar Styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
 
-/* PLDT Corporate Styles */
-.bg-pldt-red {
-  background-color: #D6001C;
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.text-pldt-red {
-  color: #D6001C;
+*::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.border-pldt-red {
-  border-color: #D6001C;
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
-/* Enterprise UI Components */
-.call-button {
-  position: relative;
-  flex-shrink: 0;
+*::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
-.call-button::before {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(214, 0, 28, 0.2) 0%, transparent 70%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
+*::-webkit-scrollbar-thumb:active {
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
-.call-button:hover::before {
-  opacity: 1;
-}
-
-.control-button {
-  backdrop-filter: blur(8px);
-  flex-shrink: 0;
-}
-
-/* Prevent content overflow */
-.overflow-safe {
-  overflow: hidden;
-  max-width: 100%;
-}
-
-/* Better flex children */
-.flex-safe {
-  min-width: 0;
-  min-height: 0;
-}
-
-/* Smooth focus states for accessibility */
-*:focus-visible {
-  outline: 2px solid #D6001C;
-  outline-offset: 2px;
-}
-
-/* Scrollbar utilities */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-/* Better mobile touch */
-.touch-manipulation {
-  touch-action: manipulation;
-}
-
-.tap-highlight-transparent {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Prevent horizontal scroll on mobile */
-body {
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Better text rendering */
-h1, h2, h3, h4, h5, h6 {
-  text-rendering: optimizeLegibility;
-}
-
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}

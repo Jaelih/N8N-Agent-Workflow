@@ -1,7 +1,7 @@
 import type { VoiceResponse} from "../components/types";
 
 // FastAPI Backend URL (Python-PLDT)
-const BASE_URL = "http://127.0.0.1:8000"; 
+const BASE_URL = "http://localhost:8000";
 
 // Token management
 const TOKEN_KEY = "access_token";

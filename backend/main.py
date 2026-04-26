@@ -35,9 +35,9 @@ app = FastAPI(
 
 # CORS Configuration
 origins = [
-    "http://localhost:5173",    # React Frontend (Dev)
-    "http://127.0.0.1:5173",    # Alternative Localhost
-    "http://localhost:3000",    # Production Frontend (Docker)
+    "http://localhost:5173",    # Local dev frontend
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",    # Docker frontend
     "http://127.0.0.1:3000",
 ]
 
@@ -80,37 +80,32 @@ async def voice_chat(
     os.remove(temp_path)
     print(f"Customer [{session_id}]: {user_text}")
 
-    # Step 2: Get chat history
-    history = get_history(session_id)
-
-    # Step 3: Run LangChain Agent
-    agent_response = run_agent(user_text, history)
+    # Step 2: Run LangChain Agent
+    agent_response = run_agent(user_text, session_id)
     print(f"Gabby [{session_id}]: {agent_response}")
 
-    # Step 4: Save conversation
+    # Step 3: Save conversation
     save_message(session_id, "user", user_text)
     save_message(session_id, "assistant", agent_response)
 
-    # Step 5: TTS
-    audio_path = f"response_{session_id}.mp3"
+    # Step 4: TTS
+    filename = f"response_{session_id}.mp3"
+    audio_path = f"/app/audio/{filename}"
     await speak(agent_response, output_path=audio_path)
 
     return {
         "session_id": session_id,
         "transcript": user_text,
         "response_text": agent_response,
-        "audio_file": audio_path
+        "audio_file": filename    # ← change from audio_path to filename
     }
-
 
 @app.post("/text-chat")
 async def text_chat(body: dict):
     user_input = body.get("message", "")
     session_id = body.get("session_id", "default")
 
-    history = get_history(session_id)
-
-    response = run_agent(user_input, history)
+    response = run_agent(user_input, session_id)
 
     save_message(session_id, "user", user_input)
     save_message(session_id, "assistant", response)
@@ -120,11 +115,11 @@ async def text_chat(body: dict):
         "response": response
     }
 
-
 @app.get("/audio/{filename}")
 async def get_audio(filename: str):
-    if os.path.exists(filename):
-        return FileResponse(filename, media_type="audio/mpeg")
+    path = f"/app/audio/{filename}"
+    if os.path.exists(path):
+        return FileResponse(path, media_type="audio/mpeg")
     return {"error": "Audio file not found"}
 
 
